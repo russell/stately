@@ -19,7 +19,10 @@ builds:
       goarch: arm64
   ldflags: -s -w -X github.com/russell/stately/pkg/buildinfo.Version=v{{.Version}} -X github.com/russell/stately/pkg/buildinfo.GitSHA={{.FullCommit}}
 archives:
-  - id: tar
+  - name_template: "{{.ProjectName}}-{{.Os}}-{{.Arch}}"
     format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
     files:
     - LICENSE
