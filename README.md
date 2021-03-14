@@ -26,3 +26,12 @@ tmp/t.text
 ``` shell
 bazel run //:gazelle -- update-repos  -from_file=go.mod
 ```
+
+
+# Building
+
+``` shell
+bazel build --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64 //:stately
+
+bazel build --platforms=@io_bazel_rules_go//go/toolchain:darwin_amd64 //:stately
+```

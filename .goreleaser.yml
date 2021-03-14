@@ -1,0 +1,25 @@
+builds:
+- binary: stately
+  env:
+    - CGO_ENABLED=0
+  goos:
+    - windows
+    - darwin
+    - linux
+  goarch:
+    - amd64
+    - arm64
+    - 386
+  ignore:
+    - goos: darwin
+      goarch: 386
+    - goos: darwin
+      goarch: arm64
+    - goos: windows
+      goarch: arm64
+  ldflags: -s -w -X github.com/russell/stately/pkg/buildinfo.Version=v{{.Version}} -X github.com/russell/stately/pkg/buildinfo.GitSHA={{.FullCommit}}
+archives:
+  - id: tar
+    format: tar.gz
+    files:
+    - LICENSE
