@@ -36,7 +36,6 @@ func Copy(o *CopyOptions) (error) {
 	var currentState config.StateConfig
 
 	newState := config.NewStateConfig()
-	newState.OutputDirectory = o.OutputDirectory
 
 	if _, err := os.Stat(o.StateFile); err == nil {
 		currentState, _ = config.NewStateConfigFromFile(o.StateFile)

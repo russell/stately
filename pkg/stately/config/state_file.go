@@ -15,7 +15,6 @@ type StateFile struct {
 type StateConfig struct {
 	APIVersion      string      `json:"apiVersion"`
 	Kind            string      `json:"kind"`
-	OutputDirectory string      `json: outputDirectory`
 	Files           []StateFile `json:"directories"`
 }
 
