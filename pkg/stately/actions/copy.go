@@ -17,14 +17,11 @@ package actions
 
 import (
 	"fmt"
+	"io"
 	"os"
-	"path"
 	"path/filepath"
-	"strings"
 
-	dircopy "github.com/otiai10/copy"
 	"go.uber.org/zap"
-
 	"github.com/russell/stately/pkg/stately/config"
 )
 
@@ -43,56 +40,22 @@ func Copy(o *CopyOptions) (error) {
 
 	if _, err := os.Stat(o.StateFile); err == nil {
 		currentState, _ = config.NewStateConfigFromFile(o.StateFile)
-
-		// Check that output directory matches
-		if currentState.OutputDirectory != newState.OutputDirectory{
-			return fmt.Errorf("Output directory in state file doesn't match argument '%s' != %s",
-				currentState.OutputDirectory,
-				newState.OutputDirectory)
-		}
 	}
 
 	var newFiles []config.StateFile
 
 	var src os.FileInfo
-	var srcPath string
-	opt := dircopy.Options{
-		Skip: func(s string) (bool, error) {
-			// Skip recording directories
-			if info, _ := os.Lstat(s); info.IsDir() {
-				return false, nil
-			}
-
-			o.Logger.Debugf("Copying: %s", s)
-
-			if src.IsDir() {
-				s = strings.TrimPrefix(s, srcPath)
-			}
-			if s[0] == '/' {
-				s = s[1:]
-			}
-			newFiles = append(newFiles, config.StateFile{Path: s})
-			return false, nil
-		},
-		PreserveTimes: true,
-		AddPermission: 0200,
-	}
 
 	for _, s := range o.SourcePaths {
 		var dest string
 		src, _ = os.Lstat(s)
-		srcPath = s
 		if src.IsDir() {
-			dest = o.OutputDirectory
+			return fmt.Errorf("ERROR: Only files are supported: %s", s)
 		} else {
-			dest = filepath.Join(o.OutputDirectory, path.Base(s))
+			dest = filepath.Join(o.OutputDirectory, s)
 			// dircopy, won't call the skip method on single file copies.
-			newFiles = append(newFiles, config.StateFile{Path: path.Base(s)})
-			o.Logger.Debugf("Copying: %s", path.Base(s))
-		}
-		err := dircopy.Copy(s, dest, opt)
-		if err != nil {
-			o.Logger.Errorw(fmt.Sprint(err))
+			newFiles = append(newFiles, config.StateFile{Path: s})
+			o.CopyFile(s, dest)
 		}
 	}
 
@@ -120,5 +83,41 @@ func Copy(o *CopyOptions) (error) {
 	}
 
 	newState.WriteToFile(o.StateFile)
+	return nil
+}
+
+func (o *CopyOptions) CopyFile(src string, dest string) (err error) {
+	var destination *os.File
+	var source *os.File
+	var info os.FileInfo
+
+	if info, err = os.Lstat(src); err != nil {
+		return err
+	}
+
+	if err := os.MkdirAll(filepath.Dir(dest), os.ModePerm); err != nil {
+		return err
+	}
+
+	o.Logger.Debugf("Copying: %s", src)
+
+	destination, err = os.Create(dest)
+	if err != nil {
+		return err
+	}
+
+	if err := os.Chmod(destination.Name(), info.Mode()|0200); err != nil {
+		return err
+	}
+
+	source, err = os.Open(src)
+	if err != nil {
+		return err
+	}
+
+	if _, err := io.Copy(destination, source); err != nil {
+		return err
+	}
+
 	return nil
 }
