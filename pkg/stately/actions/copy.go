@@ -75,6 +75,7 @@ func Copy(o *CopyOptions) (error) {
 			return false, nil
 		},
 		PreserveTimes: true,
+		AddPermission: 0200,
 	}
 
 	for _, s := range o.SourcePaths {
