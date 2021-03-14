@@ -43,11 +43,12 @@ func Copy(o *CopyOptions) (error) {
 
 	var newFiles []config.StateFile
 
-	var src os.FileInfo
-
 	for _, s := range o.SourcePaths {
 		var dest string
-		src, _ = os.Lstat(s)
+		src, err := os.Lstat(s)
+		if err != nil {
+			return fmt.Errorf("ERROR: File doesn't exist: %s", src)
+		}
 		if src.IsDir() {
 			return fmt.Errorf("ERROR: Only files are supported: %s", s)
 		} else {
