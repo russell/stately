@@ -29,7 +29,7 @@ type CopyOptions struct {
 	SourcePaths     []string
 	StateFile       string
 	OutputDirectory string
-	Logger *zap.SugaredLogger
+	Logger          *zap.SugaredLogger
 }
 
 func Copy(o *CopyOptions) {
@@ -41,7 +41,7 @@ func Copy(o *CopyOptions) {
 
 	opt := dircopy.Options{
 		Skip: func(src string) (bool, error) {
-			newFiles = append(newFiles, config.StateFile{ Path: src })
+			newFiles = append(newFiles, config.StateFile{Path: src})
 			return false, nil
 		},
 		PreserveTimes: true,
