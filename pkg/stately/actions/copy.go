@@ -18,6 +18,7 @@ package actions
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	dircopy "github.com/otiai10/copy"
 	"go.uber.org/zap"
@@ -35,17 +36,17 @@ type CopyOptions struct {
 func Copy(o *CopyOptions) (error) {
 	var currentState config.StateConfig
 
-	state := config.NewStateConfig()
-	state.OutputDirectory = o.OutputDirectory
+	newState := config.NewStateConfig()
+	newState.OutputDirectory = o.OutputDirectory
 
 	if _, err := os.Stat(o.StateFile); err == nil {
 		currentState, _ = config.NewStateConfigFromFile(o.StateFile)
 
 		// Check that output directory matches
-		if currentState.OutputDirectory != state.OutputDirectory{
+		if currentState.OutputDirectory != newState.OutputDirectory{
 			return fmt.Errorf("Output directory in state file doesn't match argument '%s' != %s",
 				currentState.OutputDirectory,
-				state.OutputDirectory)
+				newState.OutputDirectory)
 		}
 	}
 
@@ -67,7 +68,29 @@ func Copy(o *CopyOptions) (error) {
 		}
 	}
 
-	state.Files = newFiles
-	state.WriteToFile(o.StateFile)
+	newState.Files = newFiles
+
+	// Calculate what should be deleted
+	toDelete := make(map[string]bool)
+	for _, s := range currentState.Files {
+		toDelete[s.Path] = true
+	}
+
+	for _, s := range newState.Files {
+		toDelete[s.Path] = false
+	}
+
+	for file, delete := range toDelete {
+		if delete == false {
+			continue
+		}
+		filePath := filepath.Join(o.OutputDirectory, file)
+
+		if err := os.Remove(filePath); err != nil {
+			o.Logger.Infof("Couldn't delete: %s", filePath)
+		}
+	}
+
+	newState.WriteToFile(o.StateFile)
 	return nil
 }
