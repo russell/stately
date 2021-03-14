@@ -54,10 +54,6 @@ func Copy(o *CopyOptions) {
 		}
 	}
 
-	sort.Slice(newFiles, func(i, j int) bool {
-		return newFiles[i].Path < newFiles[j].Path
-	})
-
 	state.Files = newFiles
 	state.WriteToFile(o.StateFile)
 }

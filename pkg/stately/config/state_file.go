@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"sort"
 	"io/ioutil"
 
 	"github.com/ghodss/yaml"
@@ -26,6 +27,7 @@ func NewStateConfig() StateConfig {
 }
 
 func (c StateConfig) WriteToFile(path string) error {
+	c.Sort()
 	bs, err := c.AsBytes()
 	if err != nil {
 		return fmt.Errorf("Marshaling state config: %s", err)
@@ -46,4 +48,10 @@ func (c StateConfig) AsBytes() ([]byte, error) {
 	}
 
 	return bs, nil
+}
+
+func (c StateConfig) Sort() () {
+	sort.Slice(c.Files, func(i, j int) bool {
+		return c.Files[i].Path < c.Files[j].Path
+	})
 }
