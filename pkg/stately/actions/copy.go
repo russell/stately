@@ -18,7 +18,9 @@ package actions
 import (
 	"fmt"
 	"os"
+	"path"
 	"path/filepath"
+	"strings"
 
 	dircopy "github.com/otiai10/copy"
 	"go.uber.org/zap"
@@ -52,17 +54,42 @@ func Copy(o *CopyOptions) (error) {
 
 	var newFiles []config.StateFile
 
+	var src os.FileInfo
+	var srcPath string
 	opt := dircopy.Options{
-		Skip: func(src string) (bool, error) {
-			newFiles = append(newFiles, config.StateFile{Path: src})
-			o.Logger.Debugf("Copying: %s", src)
+		Skip: func(s string) (bool, error) {
+			// Skip recording directories
+			if info, _ := os.Lstat(s); info.IsDir() {
+				return false, nil
+			}
+
+			o.Logger.Debugf("Copying: %s", s)
+
+			if src.IsDir() {
+				s = strings.TrimPrefix(s, srcPath)
+			}
+			if s[0] == '/' {
+				s = s[1:]
+			}
+			newFiles = append(newFiles, config.StateFile{Path: s})
 			return false, nil
 		},
 		PreserveTimes: true,
 	}
 
 	for _, s := range o.SourcePaths {
-		err := dircopy.Copy(s, o.OutputDirectory, opt)
+		var dest string
+		src, _ = os.Lstat(s)
+		srcPath = s
+		if src.IsDir() {
+			dest = o.OutputDirectory
+		} else {
+			dest = filepath.Join(o.OutputDirectory, path.Base(s))
+			// dircopy, won't call the skip method on single file copies.
+			newFiles = append(newFiles, config.StateFile{Path: path.Base(s)})
+			o.Logger.Debugf("Copying: %s", path.Base(s))
+		}
+		err := dircopy.Copy(s, dest, opt)
 		if err != nil {
 			o.Logger.Errorw(fmt.Sprint(err))
 		}
@@ -85,7 +112,7 @@ func Copy(o *CopyOptions) (error) {
 			continue
 		}
 		filePath := filepath.Join(o.OutputDirectory, file)
-
+		o.Logger.Debugf("Deleting: %s", filePath)
 		if err := os.Remove(filePath); err != nil {
 			o.Logger.Infof("Couldn't delete: %s", filePath)
 		}
