@@ -17,7 +17,7 @@ package actions
 
 import (
 	"fmt"
-	"sort"
+	"os"
 
 	dircopy "github.com/otiai10/copy"
 	"go.uber.org/zap"
@@ -32,16 +32,29 @@ type CopyOptions struct {
 	Logger          *zap.SugaredLogger
 }
 
-func Copy(o *CopyOptions) {
+func Copy(o *CopyOptions) (error) {
+	var currentState config.StateConfig
 
 	state := config.NewStateConfig()
 	state.OutputDirectory = o.OutputDirectory
+
+	if _, err := os.Stat(o.StateFile); err == nil {
+		currentState, _ = config.NewStateConfigFromFile(o.StateFile)
+
+		// Check that output directory matches
+		if currentState.OutputDirectory != state.OutputDirectory{
+			return fmt.Errorf("Output directory in state file doesn't match argument '%s' != %s",
+				currentState.OutputDirectory,
+				state.OutputDirectory)
+		}
+	}
 
 	var newFiles []config.StateFile
 
 	opt := dircopy.Options{
 		Skip: func(src string) (bool, error) {
 			newFiles = append(newFiles, config.StateFile{Path: src})
+			o.Logger.Debugf("Copying: %s", src)
 			return false, nil
 		},
 		PreserveTimes: true,
@@ -50,10 +63,11 @@ func Copy(o *CopyOptions) {
 	for _, s := range o.SourcePaths {
 		err := dircopy.Copy(s, o.OutputDirectory, opt)
 		if err != nil {
-			o.Logger.Infow(fmt.Sprint(err))
+			o.Logger.Errorw(fmt.Sprint(err))
 		}
 	}
 
 	state.Files = newFiles
 	state.WriteToFile(o.StateFile)
+	return nil
 }

@@ -16,6 +16,9 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/russell/stately/pkg/stately/actions"
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
@@ -42,7 +45,11 @@ to quickly create a Cobra application.`,
 			OutputDirectory: outputDir,
 			Logger:          sugar,
 		}
-		actions.Copy(&options)
+		err := actions.Copy(&options)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 	},
 }
 
