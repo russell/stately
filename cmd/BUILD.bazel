@@ -1,0 +1,18 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "cmd",
+    srcs = [
+        "copy.go",
+        "root.go",
+    ],
+    importpath = "github.com/russell/stately/cmd",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/stately/actions",
+        "@com_github_mitchellh_go_homedir//:go-homedir",
+        "@com_github_spf13_cobra//:cobra",
+        "@com_github_spf13_viper//:viper",
+        "@org_uber_go_zap//:zap",
+    ],
+)

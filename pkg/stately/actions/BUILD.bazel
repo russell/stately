@@ -1,0 +1,13 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "actions",
+    srcs = ["copy.go"],
+    importpath = "github.com/russell/stately/pkg/stately/actions",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/stately/config",
+        "@com_github_otiai10_copy//:copy",
+        "@org_uber_go_zap//:zap",
+    ],
+)
