@@ -2,5 +2,4 @@
 /bazel-bin
 /bazel-out
 /bazel-stately
-/stately/
 /dist/
