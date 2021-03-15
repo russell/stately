@@ -18,6 +18,7 @@ package actions
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -43,23 +44,16 @@ func Copy(o *CopyOptions) (error) {
 
 	var newFiles []config.StateFile
 
+	cb := func(s string) {
+		newFiles = append(newFiles, config.StateFile{Path: s})
+	}
+
 	for _, s := range o.SourcePaths {
 		var dest string
-		src, err := os.Lstat(s)
-		if err != nil {
-			return fmt.Errorf("ERROR: File doesn't exist: %s", src)
-		}
-		if src.IsDir() {
-			return fmt.Errorf("ERROR: Directories aren't supported: %s", s)
-		} else if src.Mode()&os.ModeSymlink != 0 {
-			return fmt.Errorf("ERROR: Symlinks aren't supported: %s", s)
-		} else if src.Mode()&os.ModeNamedPipe != 0 {
-			return fmt.Errorf("ERROR: NamedPipes aren't supported: %s", s)
-		} else {
-			dest = filepath.Join(o.OutputDirectory, s)
-			// dircopy, won't call the skip method on single file copies.
-			newFiles = append(newFiles, config.StateFile{Path: s})
-			o.CopyFile(s, dest)
+		dest = filepath.Join(o.OutputDirectory, s)
+		// dircopy, won't call the skip method on single file copies.
+		if err := o.Copy(s, dest, cb); err != nil {
+			return err
 		}
 	}
 
@@ -87,6 +81,33 @@ func Copy(o *CopyOptions) (error) {
 	}
 
 	newState.WriteToFile(o.StateFile)
+	return nil
+}
+
+func (o *CopyOptions) Copy(src string, dest string, cb func(string)) (err error) {
+	stat, err := os.Lstat(src)
+	if err != nil {
+		return fmt.Errorf("ERROR: File doesn't exist: %s", src)
+	} else if stat.IsDir() {
+		return o.CopyDirectory(src, dest, cb)
+	} else if stat.Mode()&os.ModeSymlink != 0 {
+		return fmt.Errorf("ERROR: Symlinks aren't supported: %s", src)
+	} else if stat.Mode()&os.ModeNamedPipe != 0 {
+		return fmt.Errorf("ERROR: NamedPipes aren't supported: %s", src)
+	} else {
+		cb(src)
+		return o.CopyFile(src, dest)
+	}
+}
+
+func (o *CopyOptions) CopyDirectory(src string, dest string, cb func(string)) (err error) {
+	files, err := ioutil.ReadDir(src)
+
+	for _, f := range files {
+		if err := o.Copy(filepath.Join(src, f.Name()), filepath.Join(dest, f.Name()), cb); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
