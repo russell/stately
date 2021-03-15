@@ -50,7 +50,11 @@ func Copy(o *CopyOptions) (error) {
 			return fmt.Errorf("ERROR: File doesn't exist: %s", src)
 		}
 		if src.IsDir() {
-			return fmt.Errorf("ERROR: Only files are supported: %s", s)
+			return fmt.Errorf("ERROR: Directories aren't supported: %s", s)
+		} else if src.Mode()&os.ModeSymlink != 0 {
+			return fmt.Errorf("ERROR: Symlinks aren't supported: %s", s)
+		} else if src.Mode()&os.ModeNamedPipe != 0 {
+			return fmt.Errorf("ERROR: NamedPipes aren't supported: %s", s)
 		} else {
 			dest = filepath.Join(o.OutputDirectory, s)
 			// dircopy, won't call the skip method on single file copies.
@@ -76,7 +80,7 @@ func Copy(o *CopyOptions) (error) {
 			continue
 		}
 		filePath := filepath.Join(o.OutputDirectory, file)
-		o.Logger.Debugf("Deleting: %s", filePath)
+		o.Logger.Debugf("Deleting: %s", file)
 		if err := os.Remove(filePath); err != nil {
 			o.Logger.Infof("Couldn't delete: %s", filePath)
 		}
