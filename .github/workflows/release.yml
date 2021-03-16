@@ -14,15 +14,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 12
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.15
-      - name: Install goreleaser
-        run:
-          curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npx  -p semantic-release/exec semantic-release
+          npx semantic-release
