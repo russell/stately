@@ -15,10 +15,11 @@ jobs:
         with:
           go-version: 1.15
       - name: Install goreleaser
-        run:
+        run: |
           curl -sfL https://install.goreleaser.com/github.com/goreleaser/goreleaser.sh | sh
+          mv bin ../
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ./bin/goreleaser
+          ../bin/goreleaser
