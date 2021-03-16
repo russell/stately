@@ -26,3 +26,5 @@ archives:
         format: zip
     files:
     - LICENSE
+changelog:
+  skip: true
