@@ -21,19 +21,21 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
-	"go.uber.org/zap"
 	"github.com/russell/stately/pkg/stately/config"
+	"go.uber.org/zap"
 )
 
 type CopyOptions struct {
 	SourcePaths     []string
 	StateFile       string
+	StripPrefix     string
 	OutputDirectory string
 	Logger          *zap.SugaredLogger
 }
 
-func Copy(o *CopyOptions) (error) {
+func Copy(o *CopyOptions) error {
 	var currentState config.StateConfig
 
 	newState := config.NewStateConfig()
@@ -44,13 +46,18 @@ func Copy(o *CopyOptions) (error) {
 
 	var newFiles []config.StateFile
 
-	cb := func(s string) {
-		newFiles = append(newFiles, config.StateFile{Path: s})
+	stateFile, _ := filepath.Abs(o.StateFile)
+	stateFileDir := filepath.Dir(stateFile)
+
+	cb := func(s string, d string) {
+		dest, _ := filepath.Abs(d)
+		rel, _ := filepath.Rel(stateFileDir, dest)
+		newFiles = append(newFiles, config.StateFile{Path: rel})
 	}
 
 	for _, s := range o.SourcePaths {
 		var dest string
-		dest = filepath.Join(o.OutputDirectory, s)
+		dest = filepath.Join(o.OutputDirectory, strings.TrimPrefix(s, o.StripPrefix))
 		// dircopy, won't call the skip method on single file copies.
 		if err := o.Copy(s, dest, cb); err != nil {
 			return err
@@ -69,22 +76,24 @@ func Copy(o *CopyOptions) (error) {
 		toDelete[s.Path] = false
 	}
 
+	newState.WriteToFile(o.StateFile)
+
+	os.Chdir(stateFileDir)
 	for file, delete := range toDelete {
 		if delete == false {
 			continue
 		}
-		filePath := filepath.Join(o.OutputDirectory, file)
 		o.Logger.Debugf("Deleting: %s", file)
-		if err := os.Remove(filePath); err != nil {
-			o.Logger.Infof("Couldn't delete: %s", filePath)
+		if err := os.Remove(file); err != nil {
+			o.Logger.Infof("Couldn't delete: %s", file)
+			// TODO should delete empty directories
 		}
 	}
 
-	newState.WriteToFile(o.StateFile)
 	return nil
 }
 
-func (o *CopyOptions) Copy(src string, dest string, cb func(string)) (err error) {
+func (o *CopyOptions) Copy(src string, dest string, cb func(string, string)) (err error) {
 	stat, err := os.Lstat(src)
 	if err != nil {
 		return fmt.Errorf("ERROR: File doesn't exist: %s", src)
@@ -95,12 +104,12 @@ func (o *CopyOptions) Copy(src string, dest string, cb func(string)) (err error)
 	} else if stat.Mode()&os.ModeNamedPipe != 0 {
 		return fmt.Errorf("ERROR: NamedPipes aren't supported: %s", src)
 	} else {
-		cb(src)
+		cb(src, dest)
 		return o.CopyFile(src, dest)
 	}
 }
 
-func (o *CopyOptions) CopyDirectory(src string, dest string, cb func(string)) (err error) {
+func (o *CopyOptions) CopyDirectory(src string, dest string, cb func(string, string)) (err error) {
 	files, err := ioutil.ReadDir(src)
 
 	for _, f := range files {
@@ -124,7 +133,7 @@ func (o *CopyOptions) CopyFile(src string, dest string) (err error) {
 		return err
 	}
 
-	o.Logger.Debugf("Copying: %s", src)
+	o.Logger.Debugf("Copying: %s -> %s", src, dest)
 
 	destination, err = os.Create(dest)
 	if err != nil {

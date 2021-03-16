@@ -39,9 +39,11 @@ to quickly create a Cobra application.`,
 		sugar := logger.Sugar()
 		stateFile, _ := cmd.Flags().GetString("state-file")
 		outputDir, _ := cmd.Flags().GetString("output-dir")
+		stripPrefix, _ := cmd.Flags().GetString("strip-prefix")
 		options := actions.CopyOptions{
 			SourcePaths:     args,
 			StateFile:       stateFile,
+			StripPrefix:     stripPrefix,
 			OutputDirectory: outputDir,
 			Logger:          sugar,
 		}
@@ -67,5 +69,6 @@ func init() {
 	// copyCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	copyCmd.Flags().StringP("state-file", "s", ".stately-files.yaml", "The state file to use")
 	copyCmd.Flags().StringP("output-dir", "o", "", "The location to copy to")
+	copyCmd.Flags().StringP("strip-prefix", "", "", "Remove the prefix from output paths")
 	copyCmd.MarkFlagRequired("output-dir")
 }
