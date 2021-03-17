@@ -65,31 +65,8 @@ func Copy(o *CopyOptions) error {
 	}
 
 	newState.Files = newFiles
-
-	// Calculate what should be deleted
-	toDelete := make(map[string]bool)
-	for _, s := range currentState.Files {
-		toDelete[s.Path] = true
-	}
-
-	for _, s := range newState.Files {
-		toDelete[s.Path] = false
-	}
-
 	newState.WriteToFile(o.StateFile)
-
-	os.Chdir(stateFileDir)
-	for file, delete := range toDelete {
-		if delete == false {
-			continue
-		}
-		o.Logger.Debugf("Deleting: %s", file)
-		if err := os.Remove(file); err != nil {
-			o.Logger.Infof("Couldn't delete: %s", file)
-			// TODO should delete empty directories
-		}
-	}
-
+	config.Cleanup(stateFile, currentState, newState, o.Logger)
 	return nil
 }
 
