@@ -99,7 +99,7 @@ func (c StateConfig) Validate() error {
 }
 
 
-func Cleanup(stateFilePath string, currentState StateConfig, previousState StateConfig, logger *zap.SugaredLogger) error {
+func Cleanup(stateFilePath string, previousState StateConfig, newState StateConfig, logger *zap.SugaredLogger) error {
 	// Calculate what should be deleted
 	toDelete := make(map[string]bool)
 	for _, s := range previousState.Files {
@@ -107,7 +107,7 @@ func Cleanup(stateFilePath string, currentState StateConfig, previousState State
 	}
 
 	// Make everything in the new state as to be kept
-	for _, s := range currentState.Files {
+	for _, s := range newState.Files {
 		toDelete[s.Path] = false
 	}
 
