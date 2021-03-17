@@ -54,15 +54,16 @@ type ManifestFile struct {
 	Executable   bool               `json:"executable"`
 }
 
-func (f *ManifestFile) ManifestFile(destination string) (err error) {
+func (f *ManifestFile) ManifestFile(destination string) (loc string, err error) {
+
 	dest := filepath.Join(destination, f.Path)
 	if err := os.MkdirAll(filepath.Dir(dest), os.ModePerm); err != nil {
-		return err
+		return "", err
 	}
 
 	if err := ioutil.WriteFile(dest, []byte(f.Contents), 0644); err != nil {
-		return err
+		return "", err
 	}
 
-	return nil
+	return dest, nil
 }

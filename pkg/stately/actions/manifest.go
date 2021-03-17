@@ -16,7 +16,10 @@ http://www.apache.org/licenses/LICENSE-2.0
 package actions
 
 import (
+	"os"
+	"path/filepath"
 
+	"github.com/russell/stately/pkg/stately/config"
 	"github.com/russell/stately/pkg/stately/models"
 	"go.uber.org/zap"
 )
@@ -29,16 +32,42 @@ type ManifestOptions struct {
 }
 
 func Manifest(o *ManifestOptions) error {
+	var currentState config.StateConfig
+
+	newState := config.NewStateConfig()
+
+	if _, err := os.Stat(o.StateFile); err == nil {
+		currentState, _ = config.NewStateConfigFromFile(o.StateFile)
+	}
+
+	var newFiles []config.StateFile
+	stateFile, _ := filepath.Abs(o.StateFile)
+	stateFileDir := filepath.Dir(stateFile)
+
+	// Manifest files
 	manifests, err  := models.NewManifestContainerFromStdin()
 	if err != nil {
 		return err
 	}
 
 	for _, file := range manifests.Files {
-		if err := file.ManifestFile(o.OutputDirectory); err != nil {
+		// Don't install none files
+		if file.Install == models.None {
+			continue
+		}
+
+		dest, err := file.ManifestFile(o.OutputDirectory)
+		if err != nil {
 			return err
 		}
+
+		dest, _ = filepath.Abs(dest)
+		rel, _ := filepath.Rel(stateFileDir, dest)
+		newFiles = append(newFiles, config.StateFile{Path: rel})
 	}
 
+	newState.Files = newFiles
+	newState.WriteToFile(o.StateFile)
+	config.Cleanup(stateFile, currentState, newState, o.Logger)
 	return nil
 }
