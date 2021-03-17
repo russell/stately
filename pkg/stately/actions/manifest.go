@@ -16,6 +16,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 package actions
 
 import (
+
 	"github.com/russell/stately/pkg/stately/models"
 	"go.uber.org/zap"
 )
@@ -28,9 +29,16 @@ type ManifestOptions struct {
 }
 
 func Manifest(o *ManifestOptions) error {
-	_, err  := models.NewManifestContainerFromStdin()
+	manifests, err  := models.NewManifestContainerFromStdin()
 	if err != nil {
 		return err
 	}
+
+	for _, file := range manifests.Files {
+		if err := file.ManifestFile(o.OutputDirectory); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }

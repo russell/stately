@@ -2,7 +2,10 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "models",
-    srcs = ["manifest_file.go"],
+    srcs = [
+        "manifest_container.go",
+        "manifest_file.go",
+    ],
     importpath = "github.com/russell/stately/pkg/stately/models",
     visibility = ["//visibility:public"],
 )

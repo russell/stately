@@ -1,0 +1,49 @@
+{
+    "files": {
+        "c/foo3": {
+            "executable": false,
+            "contents": "---\nkey: value",
+            "format": "Yaml",
+            "headerFormat": {
+                "suffix": "",
+                "linePrefix": "",
+                "prefix": ""
+            },
+            "headerLines": [],
+            "install": "Write"
+        },
+        "c/foo2": {
+            "executable": false,
+            "contents": "#!/bin/bash\n\nAnother raw file\nwith 2 lines!!",
+            "format": "Raw",
+            "headerFormat": {
+            },
+            "headerLines": ["line1", "line2"],
+            "install": "Write"
+        },
+        "c/foo1": {
+            "executable": false,
+            "contents": "{\"key\": \"value\"}",
+            "format": "JSON",
+            "headerFormat": null,
+            "headerLines": [],
+            "install": "Write"
+        },
+        "c/foo": {
+            "executable": false,
+            "contents": "Raw file",
+            "format": "Raw",
+            "headerFormat": null,
+            "headerLines": [],
+            "install": "Symlink"
+        },
+        "b": {
+            "executable": false,
+            "contents": "",
+            "format": "Raw",
+            "headerFormat": null,
+            "headerLines": [],
+            "install": "None"
+        }
+    }
+}
