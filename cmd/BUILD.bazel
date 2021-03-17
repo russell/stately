@@ -4,6 +4,7 @@ go_library(
     name = "cmd",
     srcs = [
         "copy.go",
+        "manifest.go",
         "root.go",
     ],
     importpath = "github.com/russell/stately/cmd",
