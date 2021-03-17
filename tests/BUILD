@@ -8,3 +8,14 @@ sh_test(
         "//:stately",
     ],
 )
+
+sh_test(
+    name = "stately_integration_copy",
+    size = "small",
+    srcs = ["copy_test.sh"],
+    args = ["$(location //:stately)"],
+    data = [
+        "test.json",
+        "//:stately",
+    ],
+)

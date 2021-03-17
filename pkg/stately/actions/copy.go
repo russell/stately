@@ -31,6 +31,7 @@ type CopyOptions struct {
 	SourcePaths     []string
 	StateFile       string
 	StripPrefix     string
+	FollowSymlinks  bool
 	OutputDirectory string
 	Logger          *zap.SugaredLogger
 }
@@ -77,7 +78,7 @@ func (o *CopyOptions) Copy(src string, dest string, cb func(string, string)) (er
 	} else if stat.IsDir() {
 		return o.CopyDirectory(src, dest, cb)
 	} else if stat.Mode()&os.ModeSymlink != 0 {
-		return fmt.Errorf("ERROR: Symlinks aren't supported: %s", src)
+		return o.CopySymlink(src, dest, cb)
 	} else if stat.Mode()&os.ModeNamedPipe != 0 {
 		return fmt.Errorf("ERROR: NamedPipes aren't supported: %s", src)
 	} else {
@@ -131,4 +132,17 @@ func (o *CopyOptions) CopyFile(src string, dest string) (err error) {
 	}
 
 	return nil
+}
+
+func (o *CopyOptions) CopySymlink(src string, dest string, cb func(string, string)) (err error) {
+	if o.FollowSymlinks == true {
+		target, err := os.Readlink(src)
+		if err != nil {
+			return err
+		}
+		cb(src, dest)
+		return o.CopyFile(target, dest)
+	}
+	return fmt.Errorf("ERROR: Symlinks aren't supported: %s", src)
+
 }

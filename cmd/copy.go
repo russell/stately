@@ -39,11 +39,13 @@ to quickly create a Cobra application.`,
 		sugar := logger.Sugar()
 		stateFile, _ := cmd.Flags().GetString("state-file")
 		outputDir, _ := cmd.Flags().GetString("output-dir")
+		followSymlinks, _ := cmd.Flags().GetBool("follow-symlinks")
 		stripPrefix, _ := cmd.Flags().GetString("strip-prefix")
 		options := actions.CopyOptions{
 			SourcePaths:     args,
 			StateFile:       stateFile,
 			StripPrefix:     stripPrefix,
+			FollowSymlinks:  followSymlinks,
 			OutputDirectory: outputDir,
 			Logger:          sugar,
 		}
@@ -58,17 +60,9 @@ to quickly create a Cobra application.`,
 func init() {
 	rootCmd.AddCommand(copyCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// copyCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// copyCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	copyCmd.Flags().StringP("state-file", "s", ".stately-files.yaml", "The state file to use")
 	copyCmd.Flags().StringP("output-dir", "o", "", "The location to copy to")
 	copyCmd.Flags().StringP("strip-prefix", "", "", "Remove the prefix from output paths")
+	copyCmd.Flags().BoolP("follow-symlinks", "L", false, "Copy the files instead of their symlinks")
 	copyCmd.MarkFlagRequired("output-dir")
 }
