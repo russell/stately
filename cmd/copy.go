@@ -39,6 +39,7 @@ to quickly create a Cobra application.`,
 		sugar := logger.Sugar()
 		stateFile, _ := cmd.Flags().GetString("state-file")
 		outputDir, _ := cmd.Flags().GetString("output-dir")
+		name, _ := cmd.Flags().GetString("name")
 		followSymlinks, _ := cmd.Flags().GetBool("follow-symlinks")
 		stripPrefix, _ := cmd.Flags().GetString("strip-prefix")
 		options := actions.CopyOptions{
@@ -46,6 +47,7 @@ to quickly create a Cobra application.`,
 			StateFile:       stateFile,
 			StripPrefix:     stripPrefix,
 			FollowSymlinks:  followSymlinks,
+			TargetName:      name,
 			OutputDirectory: outputDir,
 			Logger:          sugar,
 		}
@@ -62,6 +64,7 @@ func init() {
 
 	copyCmd.Flags().StringP("state-file", "s", ".stately-files.yaml", "The state file to use")
 	copyCmd.Flags().StringP("output-dir", "o", "", "The location to copy to")
+	copyCmd.Flags().StringP("name", "n", "default", "The name of the file set to track")
 	copyCmd.Flags().StringP("strip-prefix", "", "", "Remove the prefix from output paths")
 	copyCmd.Flags().BoolP("follow-symlinks", "L", false, "Copy the files instead of their symlinks")
 	copyCmd.MarkFlagRequired("output-dir")

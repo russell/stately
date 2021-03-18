@@ -15,17 +15,26 @@ type StateFile struct {
 	Path string `json: path`
 }
 
+type StateTarget struct {
+	Files      []StateFile `json:"files"`
+}
+
 type StateConfig struct {
-	APIVersion string      `json:"apiVersion"`
-	Kind       string      `json:"kind"`
-	Files      []StateFile `json:"directories"`
+	APIVersion string                 `json:"apiVersion"`
+	Kind       string                 `json:"kind"`
+	Targets     map[string]StateTarget `json:"target"`
 }
 
 func NewStateConfig() StateConfig {
-	return StateConfig{
+	config := StateConfig{
 		APIVersion: "simopolis.xyz/v1alpha1",
 		Kind:       "StateConfig",
 	}
+	if config.Targets == nil {
+		config.Targets = make(map[string]StateTarget)
+	}
+
+	return config
 }
 
 func NewStateConfigFromFile(path string) (StateConfig, error) {
@@ -50,6 +59,9 @@ func NewStateConfigFromBytes(bs []byte) (StateConfig, error) {
 		return StateConfig{}, fmt.Errorf("Validating state config: %s", err)
 	}
 
+	if config.Targets == nil {
+		config.Targets = make(map[string]StateTarget)
+	}
 	return config, nil
 }
 
@@ -78,9 +90,11 @@ func (c StateConfig) AsBytes() ([]byte, error) {
 }
 
 func (c StateConfig) Sort() {
-	sort.Slice(c.Files, func(i, j int) bool {
-		return c.Files[i].Path < c.Files[j].Path
-	})
+	for _, state := range c.Targets {
+		sort.Slice(state.Files, func(i, j int) bool {
+			return state.Files[i].Path < state.Files[j].Path
+		})
+	}
 }
 
 func (c StateConfig) Validate() error {
@@ -98,16 +112,15 @@ func (c StateConfig) Validate() error {
 	return nil
 }
 
-
-func Cleanup(stateFilePath string, previousState StateConfig, newState StateConfig, logger *zap.SugaredLogger) error {
+func Cleanup(stateFilePath string, targetName string, previousState StateConfig, newState StateConfig, logger *zap.SugaredLogger) error {
 	// Calculate what should be deleted
 	toDelete := make(map[string]bool)
-	for _, s := range previousState.Files {
+	for _, s := range previousState.Targets[targetName].Files {
 		toDelete[s.Path] = true
 	}
 
 	// Make everything in the new state as to be kept
-	for _, s := range newState.Files {
+	for _, s := range newState.Targets[targetName].Files {
 		toDelete[s.Path] = false
 	}
 

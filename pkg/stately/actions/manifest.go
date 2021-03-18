@@ -27,14 +27,13 @@ import (
 type ManifestOptions struct {
 	StateFile       string
 	InputFile       string
+	TargetName      string
 	OutputDirectory string
 	Logger          *zap.SugaredLogger
 }
 
 func Manifest(o *ManifestOptions) error {
 	var currentState config.StateConfig
-
-	newState := config.NewStateConfig()
 
 	if _, err := os.Stat(o.StateFile); err == nil {
 		currentState, _ = config.NewStateConfigFromFile(o.StateFile)
@@ -66,8 +65,13 @@ func Manifest(o *ManifestOptions) error {
 		newFiles = append(newFiles, config.StateFile{Path: rel})
 	}
 
-	newState.Files = newFiles
+	newState := config.NewStateConfig()
+	newState.Targets = currentState.Targets
+	if newState.Targets == nil {
+		newState.Targets = make(map[string]config.StateTarget)
+	}
+	newState.Targets[o.TargetName] = config.StateTarget{ Files: newFiles }
 	newState.WriteToFile(o.StateFile)
-	config.Cleanup(stateFile, currentState, newState, o.Logger)
+	config.Cleanup(stateFile, o.TargetName, currentState, newState, o.Logger)
 	return nil
 }

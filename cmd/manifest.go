@@ -38,11 +38,13 @@ to quickly create a Cobra application.`,
 		logger, _ := zap.NewDevelopment()
 		sugar := logger.Sugar()
 		stateFile, _ := cmd.Flags().GetString("state-file")
+		name, _ := cmd.Flags().GetString("name")
 		outputDir, _ := cmd.Flags().GetString("output-dir")
 		input, _ := cmd.Flags().GetString("input")
 		options := actions.ManifestOptions{
 			StateFile:       stateFile,
 			InputFile:       input,
+			TargetName:      name,
 			OutputDirectory: outputDir,
 			Logger:          sugar,
 		}
@@ -59,6 +61,7 @@ func init() {
 
 	manifestCmd.Flags().StringP("state-file", "s", ".stately-files.yaml", "The state file to use")
 	manifestCmd.Flags().StringP("output-dir", "o", "", "The location to copy to")
+	manifestCmd.Flags().StringP("name", "n", "default", "The name of the file set to track")
 	manifestCmd.Flags().StringP("input", "", "", "The input file or - for stdin")
 	manifestCmd.MarkFlagRequired("output-dir")
 }
