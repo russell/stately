@@ -27,13 +27,10 @@ import (
 // manifestCmd represents the manifest command
 var manifestCmd = &cobra.Command{
 	Use:   "manifest",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Convert a JSON object into some files",
+	Long: `Takes a JSON object format and converts this
+into files on disk.
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		logger, _ := zap.NewDevelopment()
 		sugar := logger.Sugar()

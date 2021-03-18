@@ -18,11 +18,12 @@ package models
 import (
 	"bufio"
 	"encoding/json"
-	"io/ioutil"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )
 
@@ -56,12 +57,12 @@ type ManifestFile struct {
 	HeaderFormat  ManifestFileHeader            `json:"headerFormat"`
 	Format        FormatType                    `json:"format"`
 	ContentString string                        `json:"-"`
-	ContentObj    map[interface{}]interface{}   `json:"-"`
-	ContentArray  []map[interface{}]interface{} `json:"-"`
+	ContentObj    interface{}   `json:"-"`
+	ContentArray  []interface{} `json:"-"`
 	Executable    bool                          `json:"executable"`
 }
 
-func (f *ManifestFile) ManifestFile(destination string) (loc string, err error) {
+func (f *ManifestFile) ManifestFile(destination string, Logger          *zap.SugaredLogger) (loc string, err error) {
 	if f.Install == None {
 		return "", nil
 	}
@@ -71,15 +72,22 @@ func (f *ManifestFile) ManifestFile(destination string) (loc string, err error) 
 		return "", err
 	}
 
-	if f.Format == Yaml {
-		f.WriteYaml(dest)
-	} else if f.Format == Json {
-		f.WriteJson(dest)
-	} else {
-		f.WriteRaw(dest)
+	if f.Install == Symlink {
+		Logger.Infof("Installing as Symlink is not supported %s", f.Path)
 	}
 
-	return dest, nil
+	if f.Install == Write || f.Install == Symlink {
+		if f.Format == Yaml {
+			f.WriteYaml(dest)
+		} else if f.Format == Json {
+			f.WriteJson(dest)
+		} else {
+			f.WriteRaw(dest)
+		}
+		return dest, nil
+	}
+
+	return "", fmt.Errorf("Unknown install type '%s' for file '%s'", f.Install, f.Path)
 }
 
 func (f *ManifestFile) HasHeader() bool {
@@ -127,14 +135,18 @@ func (f *ManifestFile) WriteYaml(destination string) error {
 }
 
 func (f *ManifestFile) WriteJson(destination string) error {
+	file, err := os.OpenFile(destination, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
 	data, err := json.MarshalIndent(f.ContentObj, "", "\t")
 	if err != nil {
 		return err
 	}
 
-	if err := ioutil.WriteFile(destination, data, 0644); err != nil {
-		return err
-	}
+	file.Write(data)
 	return nil
 }
 
@@ -144,6 +156,11 @@ func (f *ManifestFile) WriteRaw(destination string) error {
 		return err
 	}
 	defer file.Close()
+
+	// leave an empty file if the len is 0
+	if len(f.ContentString) == 0 {
+		return nil
+	}
 
 	writer := bufio.NewWriter(file)
 	scanner := bufio.NewScanner(strings.NewReader(f.ContentString))
@@ -157,7 +174,6 @@ func (f *ManifestFile) WriteRaw(destination string) error {
 		writer.WriteString(f.Header())
 		writer.WriteString(scanner.Text() + "\n")
 	}
-
 	for scanner.Scan() {
 		writer.WriteString(scanner.Text() + "\n")
 	}

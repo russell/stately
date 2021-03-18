@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"reflect"
 	"strings"
 )
 
@@ -86,13 +87,14 @@ func NewManifestContainerFromBytes(bs []byte) (ManifestContainer, error) {
 			return ManifestContainer{}, fmt.Errorf("Missing required field 'format' for file %s", path)
 		}
 
-		switch contents := file["contents"].(type) {
-		case string:
-			mFile.ContentString = contents
-		case []map[interface{}]interface{}:
-			mFile.ContentArray = contents
-		case map[interface{}]interface{}:
-			mFile.ContentObj = contents
+		contents := reflect.ValueOf(file["contents"])
+		switch contents.Kind(){
+		case reflect.String:
+			mFile.ContentString = contents.String()
+		case reflect.Slice:
+			mFile.ContentArray = contents.Interface().([]interface{})
+		case reflect.Map:
+			mFile.ContentObj = contents.Interface().(interface{})
 		default:
 			return ManifestContainer{}, fmt.Errorf("Missing required field 'contents' for file %s", path)
 		}

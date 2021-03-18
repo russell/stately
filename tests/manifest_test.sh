@@ -14,11 +14,11 @@ file_type() {
     stat -c "%F" $OUTPUT_DIR/$1
 }
 
-set -e
+set -xe
 test "$(file_type c/foo3)" = "regular file"
 test "$(file_type c/foo2)" = "regular file"
 test "$(file_type c/foo1)" = "regular file"
 test "$(file_type c/foo)" = "regular file"
-test "$(file_type b)" = "regular empty file"
+test "$(file_type empty-file)" = "regular empty file"
 
 rm -rf $OUTPUT_DIR

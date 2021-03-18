@@ -32,7 +32,7 @@ var rootCmd = &cobra.Command{
 	Short: "Track the state of installed files.",
 	Long: `Some times you want to put some files into a project,
 months later... where did they come from? Stately keeps a respectable
-state file to track installed files an remove them as needed.
+state file to track installed files and remove them as needed.
 `,
 }
 

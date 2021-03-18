@@ -55,9 +55,9 @@ func Manifest(o *ManifestOptions) error {
 			continue
 		}
 
-		dest, err := file.ManifestFile(o.OutputDirectory)
+		dest, err := file.ManifestFile(o.OutputDirectory, o.Logger)
 		if err != nil {
-			return err
+			o.Logger.Errorf("%s", err)
 		}
 
 		o.Logger.Debugf("Manifesting file: %s", dest)

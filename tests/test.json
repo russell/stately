@@ -24,10 +24,26 @@
             "headerLines": ["line1", "line2"],
             "install": "Write"
         },
-        "c/foo1": {
+        "c/foo4": {
             "executable": false,
             "contents": "{\"key\": \"value\"}",
             "format": "JSON",
+            "headerFormat": null,
+            "headerLines": [],
+            "install": "Write"
+        },
+        "c/foo1": {
+            "executable": false,
+            "contents": {"key": "value"},
+            "format": "JSON",
+            "headerFormat": null,
+            "headerLines": [],
+            "install": "Write"
+        },
+        "c/foo5": {
+            "executable": false,
+            "contents": {"key": "value"},
+            "format": "YAML",
             "headerFormat": null,
             "headerLines": [],
             "install": "Write"
@@ -40,13 +56,13 @@
             "headerLines": [],
             "install": "Symlink"
         },
-        "b": {
+        "empty-file": {
             "executable": false,
             "contents": "",
             "format": "Raw",
             "headerFormat": null,
             "headerLines": [],
-            "install": "Raw"
+            "install": "Write"
         },
         "a": {
             "executable": false,
