@@ -22,7 +22,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-
+	"time"
+	"github.com/gofrs/flock"
 	"github.com/russell/stately/pkg/stately/config"
 	"go.uber.org/zap"
 )
@@ -39,6 +40,10 @@ type CopyOptions struct {
 
 func Copy(o *CopyOptions) error {
 	var currentState config.StateConfig
+
+	fileLock := flock.New(o.StateFile)
+	o.LockFile(fileLock)
+	defer fileLock.Unlock()
 
 	if _, err := os.Stat(o.StateFile); err == nil {
 		currentState, _ = config.NewStateConfigFromFile(o.StateFile)
@@ -161,4 +166,14 @@ func (o *CopyOptions) CopySymlink(src string, dest string, cb func(string, strin
 	}
 	return fmt.Errorf("ERROR: Symlinks aren't supported: %s", src)
 
+}
+
+func (o *CopyOptions)LockFile(fileLock *flock.Flock) (bool, error) {
+	locked, err := fileLock.TryLock()
+	if err != nil{
+		o.Logger.Debugf("Trying to acquire lock of %s", o.StateFile + ".lock")
+		time.Sleep(100 * time.Millisecond)
+		return o.LockFile(fileLock)
+	}
+	return locked, nil
 }

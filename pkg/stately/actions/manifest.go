@@ -16,12 +16,13 @@ http://www.apache.org/licenses/LICENSE-2.0
 package actions
 
 import (
-	"os"
-	"path/filepath"
-
+	"github.com/gofrs/flock"
 	"github.com/russell/stately/pkg/stately/config"
 	"github.com/russell/stately/pkg/stately/models"
 	"go.uber.org/zap"
+	"os"
+	"path/filepath"
+	"time"
 )
 
 type ManifestOptions struct {
@@ -35,6 +36,10 @@ type ManifestOptions struct {
 func Manifest(o *ManifestOptions) error {
 	var currentState config.StateConfig
 
+	fileLock := flock.New(o.StateFile)
+	o.LockFile(fileLock)
+	defer fileLock.Unlock()
+
 	if _, err := os.Stat(o.StateFile); err == nil {
 		currentState, _ = config.NewStateConfigFromFile(o.StateFile)
 	}
@@ -44,7 +49,7 @@ func Manifest(o *ManifestOptions) error {
 	stateFileDir := filepath.Dir(stateFile)
 
 	// Manifest files
-	manifests, err  := models.NewManifestContainerFromStdin()
+	manifests, err := models.NewManifestContainerFromStdin()
 	if err != nil {
 		return err
 	}
@@ -71,8 +76,18 @@ func Manifest(o *ManifestOptions) error {
 	if newState.Targets == nil {
 		newState.Targets = make(map[string]config.StateTarget)
 	}
-	newState.Targets[o.TargetName] = config.StateTarget{ Files: newFiles }
+	newState.Targets[o.TargetName] = config.StateTarget{Files: newFiles}
 	newState.WriteToFile(o.StateFile)
 	config.Cleanup(stateFile, o.TargetName, currentState, newState, o.Logger)
 	return nil
+}
+
+func (o *ManifestOptions) LockFile(fileLock *flock.Flock) (bool, error) {
+	locked, err := fileLock.TryLock()
+	if err != nil {
+		o.Logger.Debugf("Trying to acquire lock of %s", o.StateFile+".lock")
+		time.Sleep(100 * time.Millisecond)
+		return o.LockFile(fileLock)
+	}
+	return locked, nil
 }
