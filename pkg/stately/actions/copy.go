@@ -144,8 +144,20 @@ func (o *CopyOptions) CopySymlink(src string, dest string, cb func(string, strin
 		if err != nil {
 			return err
 		}
-		cb(src, dest)
-		return o.CopyFile(target, dest)
+		// If the end of the symlink isn't a
+		stat, err := os.Lstat(target)
+		if err != nil {
+			return fmt.Errorf("ERROR: File doesn't exist: %s", src)
+		} else if stat.IsDir() {
+			return o.CopyDirectory(src, dest, cb)
+		} else if stat.Mode()&os.ModeSymlink != 0 {
+			return fmt.Errorf("ERROR: Multiple symlinks aren't supported: %s", src)
+		} else if stat.Mode()&os.ModeNamedPipe != 0 {
+			return fmt.Errorf("ERROR: NamedPipes aren't supported: %s", src)
+		} else {
+			cb(src, dest)
+			return o.CopyFile(target, dest)
+		}
 	}
 	return fmt.Errorf("ERROR: Symlinks aren't supported: %s", src)
 
