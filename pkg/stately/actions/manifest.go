@@ -60,6 +60,7 @@ func Manifest(o *ManifestOptions) error {
 			return err
 		}
 
+		o.Logger.Debugf("Manifesting file: %s", dest)
 		dest, _ = filepath.Abs(dest)
 		rel, _ := filepath.Rel(stateFileDir, dest)
 		newFiles = append(newFiles, config.StateFile{Path: rel})

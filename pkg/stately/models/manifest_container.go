@@ -88,17 +88,26 @@ func NewManifestContainerFromBytes(bs []byte) (ManifestContainer, error) {
 
 		switch contents := file["contents"].(type) {
 		case string:
-			mFile.Contents = contents
+			mFile.ContentString = contents
+		case []map[interface{}]interface{}:
+			mFile.ContentArray = contents
+		case map[interface{}]interface{}:
+			mFile.ContentObj = contents
 		default:
 			return ManifestContainer{}, fmt.Errorf("Missing required field 'contents' for file %s", path)
 		}
 
-		switch headerLines := files["headerLines"].(type) {
-		case []string:
-			mFile.HeaderLines = headerLines
+		switch headerLines := file["headerLines"].(type) {
+		case []interface{}:
+			for _, l := range headerLines {
+				switch line := l.(type) {
+				case string:
+					mFile.HeaderLines = append(mFile.HeaderLines, line)
+				}
+			}
 		}
 
-		switch headerFormat := files["headerFormat"].(type) {
+		switch headerFormat := file["headerFormat"].(type) {
 		case map[string]interface{}:
 			mHeader := ManifestFileHeader{
 				Prefix:      headerFormat["prefix"].(string),

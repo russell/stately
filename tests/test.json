@@ -5,11 +5,11 @@
             "contents": "---\nkey: value",
             "format": "Yaml",
             "headerFormat": {
-                "suffix": "",
-                "linePrefix": "",
-                "prefix": ""
+                "suffix": "### Suffix",
+                "linePrefix": "# ",
+                "prefix": "#### Prefix"
             },
-            "headerLines": [],
+            "headerLines": ["hello", "from", "the", "header"],
             "install": "Write"
         },
         "c/foo2": {
@@ -17,6 +17,9 @@
             "contents": "#!/bin/bash\n\nAnother raw file\nwith 2 lines!!",
             "format": "Raw",
             "headerFormat": {
+                "suffix": "### Suffix",
+                "linePrefix": "# ",
+                "prefix": "#### Prefix"
             },
             "headerLines": ["line1", "line2"],
             "install": "Write"

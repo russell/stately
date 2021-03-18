@@ -16,9 +16,14 @@ http://www.apache.org/licenses/LICENSE-2.0
 package models
 
 import (
+	"bufio"
+	"encoding/json"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
+
+	"gopkg.in/yaml.v2"
 )
 
 type FormatType string
@@ -45,25 +50,117 @@ type ManifestFileHeader struct {
 }
 
 type ManifestFile struct {
-	Path         string             `json:"-"`
-	Install      InstallerType      `json:"install"`
-	HeaderLines  []string           `json:"headerLines"`
-	HeaderFormat ManifestFileHeader `json:"headerFormat"`
-	Format       FormatType         `json:"format"`
-	Contents     string             `json:"contents"`
-	Executable   bool               `json:"executable"`
+	Path          string                        `json:"-"`
+	Install       InstallerType                 `json:"install"`
+	HeaderLines   []string                      `json:"headerLines"`
+	HeaderFormat  ManifestFileHeader            `json:"headerFormat"`
+	Format        FormatType                    `json:"format"`
+	ContentString string                        `json:"-"`
+	ContentObj    map[interface{}]interface{}   `json:"-"`
+	ContentArray  []map[interface{}]interface{} `json:"-"`
+	Executable    bool                          `json:"executable"`
 }
 
 func (f *ManifestFile) ManifestFile(destination string) (loc string, err error) {
+	if f.Install == None {
+		return "", nil
+	}
 
 	dest := filepath.Join(destination, f.Path)
 	if err := os.MkdirAll(filepath.Dir(dest), os.ModePerm); err != nil {
 		return "", err
 	}
 
-	if err := ioutil.WriteFile(dest, []byte(f.Contents), 0644); err != nil {
-		return "", err
+	if f.Format == Yaml {
+		f.WriteYaml(dest)
+	} else if f.Format == Json {
+		f.WriteJson(dest)
+	} else {
+		f.WriteRaw(dest)
 	}
 
 	return dest, nil
+}
+
+func (f *ManifestFile) HasHeader() bool {
+	return !f.HeaderFormat.NoHeader
+}
+
+func (f *ManifestFile) Header() (header string) {
+	if f.HeaderFormat.NoHeader {
+		return ""
+	}
+
+	var prefix string
+	if f.HeaderFormat.LinesPrefix != "" {
+		prefix = f.HeaderFormat.LinesPrefix
+	} else if f.Format == Yaml {
+		prefix = "# "
+	} else {
+		prefix = ""
+	}
+
+	var b strings.Builder
+	b.WriteString(f.HeaderFormat.Prefix + "\n")
+	for _, s := range f.HeaderLines {
+		b.WriteString(prefix + s + "\n")
+	}
+	b.WriteString(f.HeaderFormat.Suffix + "\n")
+	return b.String()
+}
+
+func (f *ManifestFile) WriteYaml(destination string) error {
+	file, err := os.OpenFile(destination, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	writer := bufio.NewWriter(file)
+
+	enc := yaml.NewEncoder(writer)
+	writer.WriteString(f.Header())
+	for _, e := range f.ContentArray {
+		enc.Encode(&e)
+	}
+	writer.Flush()
+	return nil
+}
+
+func (f *ManifestFile) WriteJson(destination string) error {
+	data, err := json.MarshalIndent(f.ContentObj, "", "\t")
+	if err != nil {
+		return err
+	}
+
+	if err := ioutil.WriteFile(destination, data, 0644); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (f *ManifestFile) WriteRaw(destination string) error {
+	file, err := os.OpenFile(destination, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	writer := bufio.NewWriter(file)
+	scanner := bufio.NewScanner(strings.NewReader(f.ContentString))
+	scanner.Scan()
+
+	// Write the header after and shebang
+	if strings.HasPrefix(scanner.Text(), "#!") {
+		writer.WriteString(scanner.Text() + "\n")
+		writer.WriteString(f.Header())
+	} else {
+		writer.WriteString(f.Header())
+		writer.WriteString(scanner.Text() + "\n")
+	}
+
+	for scanner.Scan() {
+		writer.WriteString(scanner.Text() + "\n")
+	}
+	writer.Flush()
+	return nil
 }
