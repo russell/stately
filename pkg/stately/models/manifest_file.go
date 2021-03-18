@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 
 	"go.uber.org/zap"
@@ -51,18 +52,16 @@ type ManifestFileHeader struct {
 }
 
 type ManifestFile struct {
-	Path          string                        `json:"-"`
-	Install       InstallerType                 `json:"install"`
-	HeaderLines   []string                      `json:"headerLines"`
-	HeaderFormat  ManifestFileHeader            `json:"headerFormat"`
-	Format        FormatType                    `json:"format"`
-	ContentString string                        `json:"-"`
-	ContentObj    interface{}   `json:"-"`
-	ContentArray  []interface{} `json:"-"`
-	Executable    bool                          `json:"executable"`
+	Path         string             `json:"-"`
+	Install      InstallerType      `json:"install"`
+	HeaderLines  []string           `json:"headerLines"`
+	HeaderFormat ManifestFileHeader `json:"headerFormat"`
+	Format       FormatType         `json:"format"`
+	Content      interface{}        `json:"-"`
+	Executable   bool               `json:"executable"`
 }
 
-func (f *ManifestFile) ManifestFile(destination string, Logger          *zap.SugaredLogger) (loc string, err error) {
+func (f *ManifestFile) ManifestFile(destination string, Logger *zap.SugaredLogger) (loc string, err error) {
 	if f.Install == None {
 		return "", nil
 	}
@@ -127,8 +126,16 @@ func (f *ManifestFile) WriteYaml(destination string) error {
 
 	enc := yaml.NewEncoder(writer)
 	writer.WriteString(f.Header())
-	for _, e := range f.ContentArray {
-		enc.Encode(&e)
+	contents := reflect.ValueOf(f.Content)
+	switch contents.Kind() {
+	case reflect.Slice:
+		for _, e := range f.Content.([]interface{}) {
+			enc.Encode(&e)
+		}
+	case reflect.String:
+		writer.WriteString(f.Content.(string))
+	default:
+		enc.Encode(f.Content)
 	}
 	writer.Flush()
 	return nil
@@ -140,12 +147,11 @@ func (f *ManifestFile) WriteJson(destination string) error {
 		return err
 	}
 	defer file.Close()
-
-	data, err := json.MarshalIndent(f.ContentObj, "", "\t")
+	var data []byte
+	data, err = json.MarshalIndent(f.Content, "", "\t")
 	if err != nil {
 		return err
 	}
-
 	file.Write(data)
 	return nil
 }
@@ -157,13 +163,23 @@ func (f *ManifestFile) WriteRaw(destination string) error {
 	}
 	defer file.Close()
 
+	var content string
+
+	c := reflect.ValueOf(f.Content)
+	switch c.Kind() {
+	case reflect.String:
+		content = f.Content.(string)
+	default:
+		content = string(fmt.Sprintf("%s", f.Content))
+	}
+
 	// leave an empty file if the len is 0
-	if len(f.ContentString) == 0 {
+	if len(content) == 0 {
 		return nil
 	}
 
 	writer := bufio.NewWriter(file)
-	scanner := bufio.NewScanner(strings.NewReader(f.ContentString))
+	scanner := bufio.NewScanner(strings.NewReader(content))
 	scanner.Scan()
 
 	// Write the header after and shebang
