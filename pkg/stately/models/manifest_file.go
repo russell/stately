@@ -93,6 +93,13 @@ func (f *ManifestFile) HasHeader() bool {
 	return !f.HeaderFormat.NoHeader
 }
 
+func (f *ManifestFile) Permissions() (os.FileMode) {
+	if f.Executable {
+		return 0755
+	}
+	return 0644
+}
+
 func (f *ManifestFile) Header() (header string) {
 	if f.HeaderFormat.NoHeader {
 		return ""
@@ -117,7 +124,7 @@ func (f *ManifestFile) Header() (header string) {
 }
 
 func (f *ManifestFile) WriteYaml(destination string) error {
-	file, err := os.OpenFile(destination, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	file, err := os.OpenFile(destination, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, f.Permissions())
 	if err != nil {
 		return err
 	}
@@ -142,7 +149,7 @@ func (f *ManifestFile) WriteYaml(destination string) error {
 }
 
 func (f *ManifestFile) WriteJson(destination string) error {
-	file, err := os.OpenFile(destination, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	file, err := os.OpenFile(destination, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, f.Permissions())
 	if err != nil {
 		return err
 	}
@@ -157,7 +164,7 @@ func (f *ManifestFile) WriteJson(destination string) error {
 }
 
 func (f *ManifestFile) WriteRaw(destination string) error {
-	file, err := os.OpenFile(destination, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	file, err := os.OpenFile(destination, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, f.Permissions())
 	if err != nil {
 		return err
 	}

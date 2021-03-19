@@ -13,7 +13,7 @@
             "install": "Write"
         },
         "c/foo2": {
-            "executable": false,
+            "executable": true,
             "contents": "#!/bin/bash\n\nAnother raw file\nwith 2 lines!!",
             "format": "Raw",
             "headerFormat": {

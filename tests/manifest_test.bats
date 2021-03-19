@@ -8,7 +8,6 @@ setup_file() {
 }
 
 teardown_file() {
-    rm -rf "$TEST_DIR"
     rm -rf "$OUTPUT_DIR"
 }
 
@@ -16,12 +15,22 @@ teardown_file() {
     stately -h
 }
 
-@test "Test file foo3 in subdir was created" {
+@test "Test file c/foo3 in subdir was created" {
     test "$(file_type c/foo3)" = "regular file"
 }
 
-@test "Test file foo2 in a subdir was created" {
+@test "Test file c/foo2 in a subdir was created" {
     test "$(file_type c/foo2)" = "regular file"
+}
+
+@test "Test file c/foo2 is executable" {
+    mode=$(stat -c "%a" "$OUTPUT_DIR/c/foo2")
+    [ "$mode" = "755" ]
+}
+
+@test "Test file c/foo3 is not executable" {
+    mode=$(stat -c "%a" "$OUTPUT_DIR/c/foo3")
+    [ "$mode" = "644" ]
 }
 
 @test "Test file foo1 in a subdir was created" {
