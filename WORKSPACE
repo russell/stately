@@ -1,4 +1,6 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+
 
 http_archive(
     name = "io_bazel_rules_go",
@@ -2212,8 +2214,9 @@ go_register_toolchains(version = "1.16")
 
 gazelle_dependencies()
 
-load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
-
+#
+# Shell Check
+#
 git_repository(
     name = "com_github_aignas_rules_shellcheck",
     commit = "94b231c8475f067c60f77459b2b54f4bcacc5e73",
@@ -2221,5 +2224,16 @@ git_repository(
 )
 
 load("@com_github_aignas_rules_shellcheck//:deps.bzl", "shellcheck_dependencies")
-
 shellcheck_dependencies()
+
+#
+# Bats
+#
+git_repository(
+    name = "bazel_bats",
+    remote = "https://github.com/filmil/bazel-bats",
+    tag = "v0.29.1",
+)
+
+load("@bazel_bats//:deps.bzl", "bazel_bats_dependencies")
+bazel_bats_dependencies(version="v1.3.0")
