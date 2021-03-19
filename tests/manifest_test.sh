@@ -1,17 +1,17 @@
 #!/bin/bash
 
-STATELY=$1
+STATELY="$1"
 
-OUTPUT_DIR=`mktemp -d`
+OUTPUT_DIR=$(mktemp -d)
 
 DIR="$( cd "$( dirname "$0" )" && pwd )"
-cat $DIR/test.json | $STATELY manifest -o $OUTPUT_DIR
+$STATELY manifest -o "$OUTPUT_DIR" < "$DIR/test.json"
 
 echo "===FILES==="
-find $OUTPUT_DIR
+find "$OUTPUT_DIR"
 
 file_type() {
-    stat -c "%F" $OUTPUT_DIR/$1
+    stat -c "%F" "$OUTPUT_DIR/$1"
 }
 
 set -xe
@@ -21,4 +21,4 @@ test "$(file_type c/foo1)" = "regular file"
 test "$(file_type c/foo)" = "regular file"
 test "$(file_type empty-file)" = "regular empty file"
 
-rm -rf $OUTPUT_DIR
+rm -rf "$OUTPUT_DIR"
