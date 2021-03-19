@@ -72,10 +72,6 @@ func Manifest(o *ManifestOptions) error {
 	}
 
 	newState := config.NewStateConfig()
-	newState.Targets = currentState.Targets
-	if newState.Targets == nil {
-		newState.Targets = make(map[string]config.StateTarget)
-	}
 	newState.Targets[o.TargetName] = config.StateTarget{Files: newFiles}
 	newState.WriteToFile(o.StateFile)
 	config.Cleanup(stateFile, o.TargetName, currentState, newState, o.Logger)

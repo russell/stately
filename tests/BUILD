@@ -22,6 +22,12 @@ bats_test(
 )
 
 bats_test(
+    name = "copy_update_test",
+    srcs = ["copy_update_test.bats"],
+    deps = ["//:stately", ":test_lib"],
+)
+
+bats_test(
     name = "manifest_test",
     srcs = ["manifest_test.bats"],
     deps = ["//:stately", ":test_lib", "fixtures"],
