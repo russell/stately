@@ -8,21 +8,23 @@ sh_library(
     ],
 )
 
+filegroup(
+    name = "fixtures",
+    srcs = [
+        "test.json",
+    ],
+)
+
 bats_test(
     name = "copy_test",
     srcs = ["copy_test.bats"],
     deps = ["//:stately", ":test_lib"],
 )
 
-sh_test(
-    name = "stately_integration_manifest",
-    size = "small",
-    srcs = ["manifest_test.sh"],
-    args = ["$(location //:stately)"],
-    data = [
-        "test.json",
-        "//:stately",
-    ],
+bats_test(
+    name = "manifest_test",
+    srcs = ["manifest_test.bats"],
+    deps = ["//:stately", ":test_lib", "fixtures"],
 )
 
 shellcheck_test(
