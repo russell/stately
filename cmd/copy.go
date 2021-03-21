@@ -18,6 +18,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/russell/stately/pkg/stately/actions"
 	"github.com/spf13/cobra"
@@ -28,7 +29,7 @@ import (
 var copyCmd = &cobra.Command{
 	Use:   "copy",
 	Short: "Copy files into an output directory",
-	Long: `Copy files from one directory to another`,
+	Long:  `Copy files from one directory to another`,
 	Run: func(cmd *cobra.Command, args []string) {
 		logger, _ := zap.NewDevelopment()
 		sugar := logger.Sugar()
@@ -37,6 +38,11 @@ var copyCmd = &cobra.Command{
 		name, _ := cmd.Flags().GetString("name")
 		followSymlinks, _ := cmd.Flags().GetBool("follow-symlinks")
 		stripPrefix, _ := cmd.Flags().GetString("strip-prefix")
+
+		// Covert the string from an octal to an int
+		unparsedFileMode, _ := cmd.Flags().GetString("file-mode")
+		fileMode, _ := strconv.ParseInt(unparsedFileMode, 8, 64)
+
 		options := actions.CopyOptions{
 			SourcePaths:     args,
 			StateFile:       stateFile,
@@ -44,6 +50,7 @@ var copyCmd = &cobra.Command{
 			FollowSymlinks:  followSymlinks,
 			TargetName:      name,
 			OutputDirectory: outputDir,
+			FileMode:        os.FileMode(fileMode),
 			Logger:          sugar,
 		}
 		err := actions.Copy(&options)
@@ -59,6 +66,7 @@ func init() {
 
 	copyCmd.Flags().StringP("state-file", "s", ".stately-files.yaml", "The state file to use")
 	copyCmd.Flags().StringP("output-dir", "o", "", "The location to copy to")
+	copyCmd.Flags().StringP("file-mode", "", "", "Set the file mode of all copied files")
 	copyCmd.Flags().StringP("name", "n", "default", "The name of the file set to track")
 	copyCmd.Flags().StringP("strip-prefix", "", "", "Remove the prefix from output paths")
 	copyCmd.Flags().BoolP("follow-symlinks", "L", false, "Copy the files instead of their symlinks")

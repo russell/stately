@@ -23,6 +23,7 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
 	"github.com/gofrs/flock"
 	"github.com/russell/stately/pkg/stately/config"
 	"go.uber.org/zap"
@@ -35,6 +36,7 @@ type CopyOptions struct {
 	TargetName      string
 	FollowSymlinks  bool
 	OutputDirectory string
+	FileMode        os.FileMode
 	Logger          *zap.SugaredLogger
 }
 
@@ -70,7 +72,7 @@ func Copy(o *CopyOptions) error {
 	}
 
 	newState := config.NewStateConfig()
-	newState.Targets[o.TargetName] = config.StateTarget{ Files: newFiles }
+	newState.Targets[o.TargetName] = config.StateTarget{Files: newFiles}
 	newState.WriteToFile(o.StateFile)
 	config.Cleanup(stateFile, o.TargetName, currentState, newState, o.Logger)
 	return nil
@@ -136,6 +138,14 @@ func (o *CopyOptions) CopyFile(src string, dest string) (err error) {
 		return err
 	}
 
+	o.Logger.Debugf("perms: %s", os.FileMode(0).Perm())
+	if o.FileMode.Perm() != os.FileMode(0).Perm() {
+		o.Logger.Debugf("chmod: %s", o.FileMode)
+		if err := os.Chmod(destination.Name(), o.FileMode|0200); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -164,10 +174,10 @@ func (o *CopyOptions) CopySymlink(src string, dest string, cb func(string, strin
 
 }
 
-func (o *CopyOptions)LockFile(fileLock *flock.Flock) (bool, error) {
+func (o *CopyOptions) LockFile(fileLock *flock.Flock) (bool, error) {
 	locked, err := fileLock.TryLock()
-	if err != nil{
-		o.Logger.Debugf("Trying to acquire lock of %s", o.StateFile + ".lock")
+	if err != nil {
+		o.Logger.Debugf("Trying to acquire lock of %s", o.StateFile+".lock")
 		time.Sleep(100 * time.Millisecond)
 		return o.LockFile(fileLock)
 	}
