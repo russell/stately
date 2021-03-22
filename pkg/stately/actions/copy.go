@@ -138,9 +138,7 @@ func (o *CopyOptions) CopyFile(src string, dest string) (err error) {
 		return err
 	}
 
-	o.Logger.Debugf("perms: %s", os.FileMode(0).Perm())
 	if o.FileMode.Perm() != os.FileMode(0).Perm() {
-		o.Logger.Debugf("chmod: %s", o.FileMode)
 		if err := os.Chmod(destination.Name(), o.FileMode|0200); err != nil {
 			return err
 		}
