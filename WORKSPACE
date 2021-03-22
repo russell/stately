@@ -1,7 +1,6 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
-
 http_archive(
     name = "io_bazel_rules_go",
     sha256 = "7c10271940c6bce577d51a075ae77728964db285dac0a46614a7934dc34303e6",
@@ -2224,6 +2223,7 @@ git_repository(
 )
 
 load("@com_github_aignas_rules_shellcheck//:deps.bzl", "shellcheck_dependencies")
+
 shellcheck_dependencies()
 
 #
@@ -2236,4 +2236,5 @@ git_repository(
 )
 
 load("@bazel_bats//:deps.bzl", "bazel_bats_dependencies")
-bazel_bats_dependencies(version="v1.3.0")
+
+bazel_bats_dependencies(version = "v1.3.0")
