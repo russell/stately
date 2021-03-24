@@ -13,6 +13,6 @@
         ],
         ["@semantic-release/exec", {
             "publishCmd": "../bin/goreleaser"
-        }],
+        }]
     ]
 }
