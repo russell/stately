@@ -21,17 +21,23 @@ tmp/t.text
 ```
 
 
-# Updating repos
+# Contributing
+
+## Updating dependencies
 
 ``` shell
+bazel run //:gazelle -- update
 bazel run //:gazelle -- update-repos  -from_file=go.mod
 ```
 
-
-# Building
+## Building
 
 ``` shell
-bazel build --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64 //:stately
+bazel build //:stately
+```
 
-bazel build --platforms=@io_bazel_rules_go//go/toolchain:darwin_amd64 //:stately
+## Tests
+
+``` shell
+bazel test //:...
 ```
