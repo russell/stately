@@ -8,11 +8,11 @@
         [
             "@semantic-release/git",
             {
-                "assets": ["docs/CHANGELOG.md"]
+                "assets": ["CHANGELOG.md"]
             }
         ],
         ["@semantic-release/exec", {
-            "successCmd": "../bin/goreleaser"
+            "publishCmd": "../bin/goreleaser"
         }]
     ]
 }
