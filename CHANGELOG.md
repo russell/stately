@@ -1,3 +1,10 @@
+## [0.7.4](https://github.com/russell/stately/compare/v0.7.3...v0.7.4) (2021-03-28)
+
+
+### Bug Fixes
+
+* Copy existing state instead of replacing it ([92b8b2f](https://github.com/russell/stately/commit/92b8b2f538f9799169ee7e04ff27095589fc2a78))
+
 ## [0.7.3](https://github.com/russell/stately/compare/v0.7.2...v0.7.3) (2021-03-24)
 
 
