@@ -18,25 +18,38 @@ filegroup(
 bats_test(
     name = "copy_test",
     srcs = ["copy_test.bats"],
-    deps = ["//:stately", ":test_lib"],
+    deps = [
+        ":test_lib",
+        "//:stately",
+    ],
 )
 
 bats_test(
     name = "copy_filemode_test",
     srcs = ["copy_filemode_test.bats"],
-    deps = ["//:stately", ":test_lib"],
+    deps = [
+        ":test_lib",
+        "//:stately",
+    ],
 )
 
 bats_test(
     name = "copy_update_test",
     srcs = ["copy_update_test.bats"],
-    deps = ["//:stately", ":test_lib"],
+    deps = [
+        ":test_lib",
+        "//:stately",
+    ],
 )
 
 bats_test(
     name = "manifest_test",
     srcs = ["manifest_test.bats"],
-    deps = ["//:stately", ":test_lib", "fixtures"],
+    deps = [
+        "fixtures",
+        ":test_lib",
+        "//:stately",
+    ],
 )
 
 shellcheck_test(

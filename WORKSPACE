@@ -2206,6 +2206,13 @@ go_repository(
     version = "v0.0.0-20201126162022-7de9c90e9dd1",
 )
 
+go_repository(
+    name = "com_github_jinzhu_copier",
+    importpath = "github.com/jinzhu/copier",
+    sum = "h1:N8MbL5niMwE3P4dOwurJixz5rMkKfujmMRFmAanSzWE=",
+    version = "v0.2.8",
+)
+
 # Declare indirect dependencies
 go_rules_dependencies()
 

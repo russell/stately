@@ -16,13 +16,16 @@ http://www.apache.org/licenses/LICENSE-2.0
 package actions
 
 import (
-	"github.com/gofrs/flock"
-	"github.com/russell/stately/pkg/stately/config"
-	"github.com/russell/stately/pkg/stately/models"
-	"go.uber.org/zap"
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/gofrs/flock"
+	"github.com/jinzhu/copier"
+	"go.uber.org/zap"
+
+	"github.com/russell/stately/pkg/stately/config"
+	"github.com/russell/stately/pkg/stately/models"
 )
 
 type ManifestOptions struct {
@@ -72,6 +75,7 @@ func Manifest(o *ManifestOptions) error {
 	}
 
 	newState := config.NewStateConfig()
+	copier.Copy(&newState.Targets, &currentState.Targets)
 	newState.Targets[o.TargetName] = config.StateTarget{Files: newFiles}
 	newState.WriteToFile(o.StateFile)
 	config.Cleanup(stateFile, o.TargetName, currentState, newState, o.Logger)

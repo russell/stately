@@ -25,8 +25,10 @@ import (
 	"time"
 
 	"github.com/gofrs/flock"
-	"github.com/russell/stately/pkg/stately/config"
+	"github.com/jinzhu/copier"
 	"go.uber.org/zap"
+
+	"github.com/russell/stately/pkg/stately/config"
 )
 
 type CopyOptions struct {
@@ -72,6 +74,7 @@ func Copy(o *CopyOptions) error {
 	}
 
 	newState := config.NewStateConfig()
+	copier.Copy(&newState.Targets, &currentState.Targets)
 	newState.Targets[o.TargetName] = config.StateTarget{Files: newFiles}
 	newState.WriteToFile(o.StateFile)
 	config.Cleanup(stateFile, o.TargetName, currentState, newState, o.Logger)
