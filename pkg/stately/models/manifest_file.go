@@ -155,7 +155,7 @@ func (f *ManifestFile) WriteJson(destination string) error {
 	}
 	defer file.Close()
 	var data []byte
-	data, err = json.MarshalIndent(f.Content, "", "\t")
+	data, err = json.MarshalIndent(f.Content, "", "  ")
 	if err != nil {
 		return err
 	}
