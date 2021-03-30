@@ -1,3 +1,10 @@
+## [0.7.5](https://github.com/russell/stately/compare/v0.7.4...v0.7.5) (2021-03-30)
+
+
+### Bug Fixes
+
+* use more standardised indent rules ([bab1c28](https://github.com/russell/stately/commit/bab1c28f08e004250ff47b6abef30065570bbcc2))
+
 ## [0.7.4](https://github.com/russell/stately/compare/v0.7.3...v0.7.4) (2021-03-28)
 
 
