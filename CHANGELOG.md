@@ -1,3 +1,10 @@
+# [0.8.0](https://github.com/russell/stately/compare/v0.7.5...v0.8.0) (2021-08-15)
+
+
+### Features
+
+* support file lists ([3926c44](https://github.com/russell/stately/commit/3926c449d4ad9ed59c7ea5cd4c9dd05172d67f58))
+
 ## [0.7.5](https://github.com/russell/stately/compare/v0.7.4...v0.7.5) (2021-03-30)
 
 
