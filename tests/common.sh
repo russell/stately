@@ -30,3 +30,7 @@ set_file_mode() {
 file_mode() {
     stat -c "%a" "$OUTPUT_DIR/$1"
 }
+
+file_contents() {
+    cat "$OUTPUT_DIR/$1"
+}

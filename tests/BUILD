@@ -12,6 +12,7 @@ filegroup(
     name = "fixtures",
     srcs = [
         "test.json",
+        "dhall-render-test.json",
     ],
 )
 
@@ -45,6 +46,16 @@ bats_test(
 bats_test(
     name = "manifest_test",
     srcs = ["manifest_test.bats"],
+    deps = [
+        "fixtures",
+        ":test_lib",
+        "//:stately",
+    ],
+)
+
+bats_test(
+    name = "manifest_dhall_test",
+    srcs = ["manifest_dhall_test.bats"],
     deps = [
         "fixtures",
         ":test_lib",
