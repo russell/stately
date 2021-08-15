@@ -1,76 +1,76 @@
 {
-    "files": {
-        "c/foo3": {
-            "executable": false,
-            "contents": "---\nkey: value",
-            "format": "Yaml",
-            "headerFormat": {
-                "suffix": "### Suffix",
-                "linePrefix": "# ",
-                "prefix": "#### Prefix"
-            },
-            "headerLines": ["hello", "from", "the", "header"],
-            "install": "Write"
-        },
-        "c/foo2": {
-            "executable": true,
-            "contents": "#!/bin/bash\n\nAnother raw file\nwith 2 lines!!",
-            "format": "Raw",
-            "headerFormat": {
-                "suffix": "### Suffix",
-                "linePrefix": "# ",
-                "prefix": "#### Prefix"
-            },
-            "headerLines": ["line1", "line2"],
-            "install": "Write"
-        },
-        "c/foo4": {
-            "executable": false,
-            "contents": "{\"key\": \"value\"}",
-            "format": "JSON",
-            "headerFormat": null,
-            "headerLines": [],
-            "install": "Write"
-        },
-        "c/foo1": {
-            "executable": false,
-            "contents": {"key": "value"},
-            "format": "JSON",
-            "headerFormat": null,
-            "headerLines": [],
-            "install": "Write"
-        },
-        "c/foo5": {
-            "executable": false,
-            "contents": {"key": "value"},
-            "format": "YAML",
-            "headerFormat": null,
-            "headerLines": [],
-            "install": "Write"
-        },
-        "c/foo": {
-            "executable": false,
-            "contents": "Raw file",
-            "format": "Raw",
-            "headerFormat": null,
-            "headerLines": [],
-            "install": "Symlink"
-        },
-        "empty-file": {
-            "executable": false,
-            "contents": "",
-            "format": "Raw",
-            "headerFormat": null,
-            "headerLines": [],
-            "install": "Write"
-        },
-        "a": {
-            "executable": false,
-            "contents": "",
-            "format": "Raw",
-            "headerFormat": null,
-            "headerLines": [],
-            "install": "None"
-        }
+  "files": {
+    "c/foo3": {
+      "executable": false,
+      "contents": "---\nkey: value",
+      "format": "Yaml",
+      "headerFormat": {
+        "suffix": "### Suffix",
+        "linePrefix": "# ",
+        "prefix": "#### Prefix"
+      },
+      "headerLines": ["hello", "from", "the", "header"],
+      "install": "Write"
+    },
+    "c/foo2": {
+      "executable": true,
+      "contents": "#!/bin/bash\n\nAnother raw file\nwith 2 lines!!",
+      "format": "Raw",
+      "headerFormat": {
+        "suffix": "### Suffix",
+        "linePrefix": "# ",
+        "prefix": "#### Prefix"
+      },
+      "headerLines": ["line1", "line2"],
+      "install": "Write"
+    },
+    "c/foo4": {
+      "executable": false,
+      "contents": "{\"key\": \"value\"}",
+      "format": "JSON",
+      "headerFormat": null,
+      "headerLines": [],
+      "install": "Write"
+    },
+    "c/foo1": {
+      "executable": false,
+      "contents": {"key": "value"},
+      "format": "JSON",
+      "headerFormat": null,
+      "headerLines": [],
+      "install": "Write"
+    },
+    "c/foo5": {
+      "executable": false,
+      "contents": {"key": "value"},
+      "format": "YAML",
+      "headerFormat": null,
+      "headerLines": [],
+      "install": "Write"
+    },
+    "c/foo": {
+      "executable": false,
+      "contents": "Raw file",
+      "format": "Raw",
+      "headerFormat": null,
+      "headerLines": [],
+      "install": "Symlink"
+    },
+    "empty-file": {
+      "executable": false,
+      "contents": "",
+      "format": "Raw",
+      "headerFormat": null,
+      "headerLines": [],
+      "install": "Write"
+    },
+    "a": {
+      "executable": false,
+      "contents": "",
+      "format": "Raw",
+      "headerFormat": null,
+      "headerLines": [],
+      "install": "None"
     }
+  }
 }

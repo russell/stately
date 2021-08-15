@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -54,78 +55,110 @@ func NewManifestContainerFromBytes(bs []byte) (ManifestContainer, error) {
 	files := container["files"].(map[string]interface{})
 
 	for path, sfile := range files {
-		file := sfile.(map[string]interface{})
-
-		mFile := ManifestFile{
-			Path: path,
-		}
-
-		switch executable := file["executable"].(type) {
-		case bool:
-			mFile.Executable = executable
-		default:
-			return ManifestContainer{}, fmt.Errorf("Missing required field 'executable' for file %s", path)
-		}
-
-		switch install := file["install"].(type) {
-		case string:
-			mFile.Install = InstallerType(strings.ToLower(install))
-		default:
-			return ManifestContainer{}, fmt.Errorf("Missing required field 'install' for file %s", path)
-		}
-
-		switch format := file["format"].(type) {
-		case string:
-			switch FormatType(strings.ToLower(format)) {
-			case Yaml, Json, Raw:
-				mFile.Format = FormatType(strings.ToLower(format))
-			default:
-				return ManifestContainer{}, fmt.Errorf("Invalid 'format' '%s' for file %s", format, path)
-			}
-		default:
-			return ManifestContainer{}, fmt.Errorf("Missing required field 'format' for file %s", path)
-		}
-
-		mFile.Content = file["contents"]
-
-		switch headerLines := file["headerLines"].(type) {
-		case []interface{}:
-			for _, l := range headerLines {
-				switch line := l.(type) {
-				case string:
-					mFile.HeaderLines = append(mFile.HeaderLines, line)
-				}
-			}
-		}
-
-		switch headerFormat := file["headerFormat"].(type) {
+		switch sfileOrList := sfile.(type) {
 		case map[string]interface{}:
-			mHeader := ManifestFileHeader{
-				Prefix:      headerFormat["prefix"].(string),
-				Suffix:      headerFormat["suffix"].(string),
-				LinesPrefix: headerFormat["linePrefix"].(string),
+			err := manifests.AddFile(path, sfile.(map[string]interface{}))
+			if err != nil {
+				return ManifestContainer{}, err
 			}
-			mFile.HeaderFormat = mHeader
-		case string:
-			mHeader := ManifestFileHeader{
-				LinesPrefix: headerFormat,
-			}
-			mFile.HeaderFormat = mHeader
-		case bool:
-			if headerFormat == false {
-				mHeader := ManifestFileHeader{
-					NoHeader: true,
+		case []interface{}:
+			for _, ssfile := range sfile.([]interface{}) {
+				switch ssfileOrList := ssfile.(type) {
+				case map[string]interface{}:
+					ssfilei := ssfile.(map[string]interface{})
+					switch ssfilepath := ssfilei["path"].(type) {
+					case string:
+						subpath := filepath.Join(path, ssfilepath)
+						err := manifests.AddFile(subpath, ssfile.(map[string]interface{}))
+						if err != nil {
+							return ManifestContainer{}, err
+						}
+					default:
+						return ManifestContainer{}, fmt.Errorf("Missing required field 'path' for file in list %s", path)
+					}
+
+				default:
+					return ManifestContainer{}, fmt.Errorf("Invalid file for %s is unsupported type %s", path, ssfileOrList)
 				}
-				mFile.HeaderFormat = mHeader
 			}
 		default:
+			return ManifestContainer{}, fmt.Errorf("Invalid file for %s is unsupported type %s", path, sfileOrList)
+		}
+
+	}
+	return manifests, nil
+}
+
+func (m *ManifestContainer) AddFile(path string, file map[string]interface{}) error {
+	mFile := ManifestFile{
+		Path: path,
+	}
+
+	switch executable := file["executable"].(type) {
+	case bool:
+		mFile.Executable = executable
+	default:
+		return fmt.Errorf("Missing required field 'executable' for file %s", path)
+	}
+
+	switch install := file["install"].(type) {
+	case string:
+		mFile.Install = InstallerType(strings.ToLower(install))
+	default:
+		return fmt.Errorf("Missing required field 'install' for file %s", path)
+	}
+
+	switch format := file["format"].(type) {
+	case string:
+		switch FormatType(strings.ToLower(format)) {
+		case Yaml, Json, Raw:
+			mFile.Format = FormatType(strings.ToLower(format))
+		default:
+			return fmt.Errorf("Invalid 'format' '%s' for file %s", format, path)
+		}
+	default:
+		return fmt.Errorf("Missing required field 'format' for file %s", path)
+	}
+
+	mFile.Content = file["contents"]
+
+	switch headerLines := file["headerLines"].(type) {
+	case []interface{}:
+		for _, l := range headerLines {
+			switch line := l.(type) {
+			case string:
+				mFile.HeaderLines = append(mFile.HeaderLines, line)
+			}
+		}
+	}
+
+	switch headerFormat := file["headerFormat"].(type) {
+	case map[string]interface{}:
+		mHeader := ManifestFileHeader{
+			Prefix:      headerFormat["prefix"].(string),
+			Suffix:      headerFormat["suffix"].(string),
+			LinesPrefix: headerFormat["linePrefix"].(string),
+		}
+		mFile.HeaderFormat = mHeader
+	case string:
+		mHeader := ManifestFileHeader{
+			LinesPrefix: headerFormat,
+		}
+		mFile.HeaderFormat = mHeader
+	case bool:
+		if headerFormat == false {
 			mHeader := ManifestFileHeader{
 				NoHeader: true,
 			}
 			mFile.HeaderFormat = mHeader
 		}
-
-		manifests.Files = append(manifests.Files, mFile)
+	default:
+		mHeader := ManifestFileHeader{
+			NoHeader: true,
+		}
+		mFile.HeaderFormat = mHeader
 	}
-	return manifests, nil
+
+	m.Files = append(m.Files, mFile)
+	return nil
 }
