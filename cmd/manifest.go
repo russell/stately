@@ -65,5 +65,6 @@ func init() {
 	manifestCmd.Flags().StringP("state-file", "s", ".stately-files.yaml", "The state file to use")
 	manifestCmd.Flags().StringP("output-dir", "o", cwd, "The location to copy to")
 	manifestCmd.Flags().StringP("name", "n", "default", "The name of the file set to track")
-	manifestCmd.Flags().StringP("input", "", "", "The input file or - for stdin")
+	manifestCmd.Flags().StringP("input", "i", "", "The input file or - for stdin")
+	manifestCmd.MarkFlagRequired("input")
 }
