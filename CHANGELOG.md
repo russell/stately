@@ -1,3 +1,10 @@
+## [0.9.1](https://github.com/russell/stately/compare/v0.9.0...v0.9.1) (2021-08-16)
+
+
+### Bug Fixes
+
+* correctly handle input flag ([d9e7126](https://github.com/russell/stately/commit/d9e7126cf76cfdc5cf58c684d00460fe1f5357ac))
+
 # [0.9.0](https://github.com/russell/stately/compare/v0.8.0...v0.9.0) (2021-08-16)
 
 
