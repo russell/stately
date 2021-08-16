@@ -1,3 +1,10 @@
+## [0.9.2](https://github.com/russell/stately/compare/v0.9.1...v0.9.2) (2021-08-16)
+
+
+### Bug Fixes
+
+* update dependencies ([4a92057](https://github.com/russell/stately/commit/4a920570fb15776872ca79677cb360870ecc800d))
+
 ## [0.9.1](https://github.com/russell/stately/compare/v0.9.0...v0.9.1) (2021-08-16)
 
 
