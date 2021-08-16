@@ -62,8 +62,9 @@ func Manifest(o *ManifestOptions) error {
 		if file.Install == models.None {
 			continue
 		}
-
-		dest, err := file.ManifestFile(o.OutputDirectory, o.Logger)
+		dest, err := file.ManifestFile(
+			filepath.Join(o.OutputDirectory, manifests.Options.Destination),
+			o.Logger)
 		if err != nil {
 			o.Logger.Errorf("%s", err)
 		}

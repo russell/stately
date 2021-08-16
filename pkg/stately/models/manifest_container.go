@@ -24,8 +24,13 @@ import (
 	"strings"
 )
 
+type ManifestContainerOptions struct {
+	Destination string `json:"destination"`
+}
+
 type ManifestContainer struct {
-	Files []ManifestFile `json:"directories"`
+	Files   []ManifestFile           `json:"directories"`
+	Options ManifestContainerOptions `json:"options"`
 }
 
 func NewManifestContainerFromFile(path string) (ManifestContainer, error) {
@@ -51,6 +56,15 @@ func NewManifestContainerFromBytes(bs []byte) (ManifestContainer, error) {
 
 	var container map[string]interface{}
 	json.Unmarshal(bs, &container)
+
+	switch options := container["options"].(type) {
+	case map[string]interface{}:
+		err := manifests.AddOptions(options)
+		if err != nil {
+			return ManifestContainer{}, err
+		}
+
+	}
 
 	files := container["files"].(map[string]interface{})
 
@@ -160,5 +174,15 @@ func (m *ManifestContainer) AddFile(path string, file map[string]interface{}) er
 	}
 
 	m.Files = append(m.Files, mFile)
+	return nil
+}
+
+func (m *ManifestContainer) AddOptions(options map[string]interface{}) error {
+
+	switch destination := options["destination"].(type) {
+	case string:
+		m.Options.Destination = destination
+	}
+
 	return nil
 }
