@@ -117,5 +117,8 @@
         "path": "3.yml"
       }
     ]
+  },
+  "options": {
+    "destination": "examples/generated"
   }
 }

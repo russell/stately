@@ -56,9 +56,14 @@ into files on disk.
 func init() {
 	rootCmd.AddCommand(manifestCmd)
 
+	cwd, err := os.Getwd()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	manifestCmd.Flags().StringP("state-file", "s", ".stately-files.yaml", "The state file to use")
-	manifestCmd.Flags().StringP("output-dir", "o", "", "The location to copy to")
+	manifestCmd.Flags().StringP("output-dir", "o", cwd, "The location to copy to")
 	manifestCmd.Flags().StringP("name", "n", "default", "The name of the file set to track")
 	manifestCmd.Flags().StringP("input", "", "", "The input file or - for stdin")
-	manifestCmd.MarkFlagRequired("output-dir")
 }
