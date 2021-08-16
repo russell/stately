@@ -38,7 +38,8 @@ location to another.
 ``` shell
 $ stately copy ./test -o tmp/
 2021-08-16T21:34:35.216+0200	DEBUG	actions/copy.go:124	Copying: test/file2.txt -> tmp/test/file2.txt
-2021-08-16T21:34:35.217+0200	DEBUG	actions/copy.go:124	Copying: test/foo/file1.txt -> tmp/test/foo/file1.txt2```
+2021-08-16T21:34:35.217+0200	DEBUG	actions/copy.go:124	Copying: test/foo/file1.txt -> tmp/test/foo/file1.txt2
+```
 
 If you use find you can see that the same files exist at the destination.
 
@@ -122,6 +123,7 @@ target:
 ## Updating dependencies
 
 ``` shell
+go get -u
 bazel run //:gazelle -- update
 bazel run //:gazelle -- update-repos  -from_file=go.mod
 ```
