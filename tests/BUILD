@@ -11,8 +11,8 @@ sh_library(
 filegroup(
     name = "fixtures",
     srcs = [
-        "test.json",
         "dhall-render-test.json",
+        "test.json",
     ],
 )
 

@@ -122,6 +122,7 @@ target:
 ## Updating dependencies
 
 ``` shell
+go get -u
 bazel run //:gazelle -- update
 bazel run //:gazelle -- update-repos  -from_file=go.mod
 ```
