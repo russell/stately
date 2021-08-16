@@ -4,7 +4,7 @@ source "tests/common.sh"
 
 setup_file() {
     export OUTPUT_DIR=$(mktemp -d)
-    stately manifest -o "$OUTPUT_DIR" < "tests/test.json"
+    stately manifest -o "$OUTPUT_DIR" -i - < "tests/test.json"
 }
 
 teardown_file() {

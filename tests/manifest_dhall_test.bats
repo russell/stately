@@ -5,7 +5,7 @@ source "tests/common.sh"
 setup_file() {
     export OUTPUT_DIR=$(mktemp -d)
     local TEST_DIR=$PWD
-    (cd "$OUTPUT_DIR"; stately manifest < "$TEST_DIR/tests/dhall-render-test.json")
+    (cd "$OUTPUT_DIR"; stately manifest -i "$TEST_DIR/tests/dhall-render-test.json")
 }
 
 teardown_file() {

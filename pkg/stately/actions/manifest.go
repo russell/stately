@@ -47,14 +47,24 @@ func Manifest(o *ManifestOptions) error {
 		currentState, _ = config.NewStateConfigFromFile(o.StateFile)
 	}
 
+	var manifests models.ManifestContainer
 	var newFiles []config.StateFile
 	stateFile, _ := filepath.Abs(o.StateFile)
 	stateFileDir := filepath.Dir(stateFile)
 
 	// Manifest files
-	manifests, err := models.NewManifestContainerFromStdin()
-	if err != nil {
-		return err
+	if o.InputFile == "-" {
+		var err error
+		manifests, err = models.NewManifestContainerFromStdin()
+		if err != nil {
+			return err
+		}
+	} else {
+		var err error
+		manifests, err = models.NewManifestContainerFromFile(o.InputFile)
+		if err != nil {
+			return err
+		}
 	}
 
 	for _, file := range manifests.Files {
