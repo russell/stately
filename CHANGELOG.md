@@ -1,3 +1,10 @@
+# [0.9.0](https://github.com/russell/stately/compare/v0.8.0...v0.9.0) (2021-08-16)
+
+
+### Features
+
+* support destination option via options field ([07a9935](https://github.com/russell/stately/commit/07a99355845a20a5082b650fed5aa9ff0e22ee36)), closes [#9](https://github.com/russell/stately/issues/9)
+
 # [0.8.0](https://github.com/russell/stately/compare/v0.7.5...v0.8.0) (2021-08-15)
 
 
