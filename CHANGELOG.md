@@ -3,6 +3,14 @@
 
 ### Bug Fixes
 
+* **deps:** bump github.com/spf13/viper from 1.8.1 to 1.11.0 ([27b41e5](https://github.com/russell/stately/commit/27b41e5f25d9787f8bf7e970a17f76806ccbddb6))
+* **deps:** bump go.uber.org/zap from 1.19.0 to 1.21.0 ([baa52eb](https://github.com/russell/stately/commit/baa52eb8a03d4bc0877d935bb214c8a9fc3c660e))
+
+## [0.9.4](https://github.com/russell/stately/compare/v0.9.3...v0.9.4) (2022-04-14)
+
+
+### Bug Fixes
+
 * **deps:** bump go.uber.org/zap from 1.19.0 to 1.21.0 ([baa52eb](https://github.com/russell/stately/commit/baa52eb8a03d4bc0877d935bb214c8a9fc3c660e))
 
 ## [0.9.4](https://github.com/russell/stately/compare/v0.9.3...v0.9.4) (2022-04-14)
