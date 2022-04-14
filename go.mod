@@ -5,7 +5,7 @@ go 1.15
 require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/gofrs/flock v0.8.1
-	github.com/jinzhu/copier v0.3.2
+	github.com/jinzhu/copier v0.3.5
 	github.com/kr/text v0.2.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
