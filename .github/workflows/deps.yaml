@@ -1,0 +1,37 @@
+name: Update Gazelle Repos
+
+on:
+  pull_request: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        token: ${{ secrets.RUSTY_ACCESS_TOKEN }}
+
+    - name: Mount bazel cache
+      uses: actions/cache@v1
+      with:
+        path: "/home/runner/.cache/bazel"
+        key: bazel
+
+    - name: Install bazelisk
+      run: |
+        curl -LO "https://github.com/bazelbuild/bazelisk/releases/download/v1.11.0/bazelisk-linux-amd64"
+        mkdir -p "${GITHUB_WORKSPACE}/bin/"
+        mv bazelisk-linux-amd64 "${GITHUB_WORKSPACE}/bin/bazel"
+        chmod +x "${GITHUB_WORKSPACE}/bin/bazel"
+
+    - name: Update Gazelle Repos
+      run: |
+        "${GITHUB_WORKSPACE}/bin/bazel" run //:gazelle-update-repos
+
+    - name: Push if changes
+      run: |
+        git config user.name "Rusty the Robot"
+        git config user.email "rusty-the-robot@simopolis.xyz"
+        git remote set-url origin https://x-access-token:${{ secrets.RUSTY_ACCESS_TOKEN }}@github.com/${{ github.repository }}
+        ./hack/commit_go_mod.sh
