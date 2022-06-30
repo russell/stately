@@ -72,9 +72,7 @@ func Manifest(o *ManifestOptions) error {
 		if file.Install == models.None {
 			continue
 		}
-		dest, err := file.ManifestFile(
-			filepath.Join(o.OutputDirectory, manifests.Options.Destination),
-			o.Logger)
+		dest, err := file.ManifestFile(o.OutputDirectory, o.Logger)
 		if err != nil {
 			o.Logger.Errorf("%s", err)
 		}
@@ -83,6 +81,10 @@ func Manifest(o *ManifestOptions) error {
 		dest, _ = filepath.Abs(dest)
 		rel, _ := filepath.Rel(stateFileDir, dest)
 		newFiles = append(newFiles, config.StateFile{Path: rel})
+	}
+
+	if o.TargetName == "default" && manifests.Options.Destination != "" {
+		o.TargetName = manifests.Options.Destination
 	}
 
 	newState := config.NewStateConfig()
