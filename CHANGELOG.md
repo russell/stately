@@ -1,3 +1,10 @@
+## [0.9.7](https://github.com/russell/stately/compare/v0.9.6...v0.9.7) (2022-06-30)
+
+
+### Bug Fixes
+
+* options.destination shouldn't effect file destination ([dc8cb58](https://github.com/russell/stately/commit/dc8cb586e6decbfb33125e37d8e3cf8541843d3e))
+
 ## [0.9.6](https://github.com/russell/stately/compare/v0.9.5...v0.9.6) (2022-04-14)
 
 
