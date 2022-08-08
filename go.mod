@@ -13,7 +13,7 @@ require (
 	github.com/spf13/viper v1.11.0
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.7.0 // indirect
-	go.uber.org/zap v1.21.0
+	go.uber.org/zap v1.22.0
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/yaml.v2 v2.4.0
 )
