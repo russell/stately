@@ -1,17 +1,17 @@
 /*
-   Copyright © 2021 Russell Sim <russell.sim@gmail.com>
+	Copyright © 2021 Russell Sim <russell.sim@gmail.com>
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
 
 http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
 */
 package models
 
@@ -24,6 +24,7 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/google/go-jsonnet/formatter"
 	"go.uber.org/zap"
 	"gopkg.in/yaml.v2"
 )
@@ -31,17 +32,18 @@ import (
 type FormatType string
 
 const (
-	Yaml FormatType = "yaml"
-	Json            = "json"
-	Raw             = "raw"
+	Yaml    FormatType = "yaml"
+	Json    FormatType = "json"
+	Jsonnet FormatType = "jsonnet"
+	Raw     FormatType = "raw"
 )
 
 type InstallerType string
 
 const (
 	Symlink InstallerType = "symlink"
-	Write                 = "write"
-	None                  = "none"
+	Write   InstallerType = "write"
+	None    InstallerType = "none"
 )
 
 type ManifestFileHeader struct {
@@ -76,11 +78,14 @@ func (f *ManifestFile) ManifestFile(destination string, Logger *zap.SugaredLogge
 	}
 
 	if f.Install == Write || f.Install == Symlink {
-		if f.Format == Yaml {
+		switch f.Format {
+		case Yaml:
 			f.WriteYaml(dest)
-		} else if f.Format == Json {
+		case Json:
 			f.WriteJson(dest)
-		} else {
+		case Jsonnet:
+			f.WriteJsonnet(dest)
+		default:
 			f.WriteRaw(dest)
 		}
 		return dest, nil
@@ -93,7 +98,7 @@ func (f *ManifestFile) HasHeader() bool {
 	return !f.HeaderFormat.NoHeader
 }
 
-func (f *ManifestFile) Permissions() (os.FileMode) {
+func (f *ManifestFile) Permissions() os.FileMode {
 	if f.Executable {
 		return 0755
 	}
@@ -160,6 +165,33 @@ func (f *ManifestFile) WriteJson(destination string) error {
 		return err
 	}
 	file.Write(data)
+	return nil
+}
+
+func (f *ManifestFile) WriteJsonnet(destination string) error {
+	file, err := os.OpenFile(destination, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, f.Permissions())
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	content := fmt.Sprintf("%s", f.Content)
+
+	// leave an empty file if the len is 0
+	if len(content) == 0 {
+		return nil
+	}
+
+	formatterOptions := formatter.DefaultOptions()
+	formattedJsonnet, err := formatter.Format(f.Path, content, formatterOptions)
+	if err != nil {
+		return err
+	}
+
+	writer := bufio.NewWriter(file)
+	writer.WriteString(f.Header())
+	writer.WriteString(formattedJsonnet)
+	writer.Flush()
 	return nil
 }
 

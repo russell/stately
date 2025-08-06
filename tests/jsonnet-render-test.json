@@ -1,0 +1,19 @@
+{
+  "files": {
+    "examples/a.jsonnet": {
+      "contents": "local foo = {\n\"hello\": \"world\"\n};\n\nfoo",
+      "executable": false,
+      "format": "Jsonnet",
+      "headerFormat": {
+        "suffix": "",
+        "linePrefix": "",
+        "prefix": "// a.jsonnet"
+      },
+      "headerLines": [],
+      "install": "Write"
+    }
+  },
+  "options": {
+    "destination": "examples/generated"
+  }
+}

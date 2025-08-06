@@ -71,6 +71,16 @@
       "headerFormat": null,
       "headerLines": [],
       "install": "None"
+    },
+    "jsonnet/file": {
+      "executable": false,
+      "contents": [
+        "{foo:'bar'}"
+      ],
+      "format": "Jsonnet",
+      "headerFormat": null,
+      "headerLines": [],
+      "install": "Write"
     }
   }
 }

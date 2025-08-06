@@ -1,17 +1,17 @@
 /*
-   Copyright © 2021 Russell Sim <russell.sim@gmail.com>
+	Copyright © 2021 Russell Sim <russell.sim@gmail.com>
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
 
 http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
 */
 package models
 
@@ -63,7 +63,6 @@ func NewManifestContainerFromBytes(bs []byte) (ManifestContainer, error) {
 		if err != nil {
 			return ManifestContainer{}, err
 		}
-
 	}
 
 	files := container["files"].(map[string]interface{})
@@ -98,7 +97,6 @@ func NewManifestContainerFromBytes(bs []byte) (ManifestContainer, error) {
 		default:
 			return ManifestContainer{}, fmt.Errorf("Invalid file for %s is unsupported type %s", path, sfileOrList)
 		}
-
 	}
 	return manifests, nil
 }
@@ -125,7 +123,7 @@ func (m *ManifestContainer) AddFile(path string, file map[string]interface{}) er
 	switch format := file["format"].(type) {
 	case string:
 		switch FormatType(strings.ToLower(format)) {
-		case Yaml, Json, Raw:
+		case Yaml, Json, Jsonnet, Raw:
 			mFile.Format = FormatType(strings.ToLower(format))
 		default:
 			return fmt.Errorf("Invalid 'format' '%s' for file %s", format, path)
@@ -178,7 +176,6 @@ func (m *ManifestContainer) AddFile(path string, file map[string]interface{}) er
 }
 
 func (m *ManifestContainer) AddOptions(options map[string]interface{}) error {
-
 	switch destination := options["destination"].(type) {
 	case string:
 		m.Options.Destination = destination
