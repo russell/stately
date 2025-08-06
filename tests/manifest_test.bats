@@ -15,6 +15,10 @@ teardown_file() {
     stately -h
 }
 
+@test "Test jsonnet-file was written" {
+    test "$(file_type jsonnet/file)" = "regular file"
+}
+
 @test "Test file c/foo3 in subdir was created" {
     test "$(file_type c/foo3)" = "regular file"
 }
