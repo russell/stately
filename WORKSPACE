@@ -30,7 +30,7 @@ go_dependencies()
 # Declare indirect dependencies
 go_rules_dependencies()
 
-go_register_toolchains(version = "1.24.6")
+go_register_toolchains(version = "1.23.4")
 
 gazelle_dependencies()
 
