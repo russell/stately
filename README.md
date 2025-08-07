@@ -123,7 +123,7 @@ target:
 ## Prerequisites
 
 - [Bazelisk](https://github.com/bazelbuild/bazelisk) or [Bazel](https://bazel.build/)
-- Go 1.22+ (managed by Bazel)
+- Go 1.24+ (managed by Bazel)
 
 ## Contributing
 
