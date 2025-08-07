@@ -1,3 +1,10 @@
+# [0.10.0](https://github.com/russell/stately/compare/v0.9.7...v0.10.0) (2025-08-07)
+
+
+### Features
+
+* support jsonnet rendering with Jsonnet format ([#42](https://github.com/russell/stately/issues/42)) ([fc28076](https://github.com/russell/stately/commit/fc2807697d5c2157e3756e12db72f607c1f065b1))
+
 ## [0.9.7](https://github.com/russell/stately/compare/v0.9.6...v0.9.7) (2022-06-30)
 
 
