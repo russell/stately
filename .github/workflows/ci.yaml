@@ -29,9 +29,15 @@ jobs:
         chmod +x "${GITHUB_WORKSPACE}/bin/bazel"
 
     - name: Test
+      env:
+        GOPROXY: https://proxy.golang.org,direct
+        GOSUMDB: sum.golang.org
       run: |
         "${GITHUB_WORKSPACE}/bin/bazel" test //...  --test_output=errors
 
     - name: Build
+      env:
+        GOPROXY: https://proxy.golang.org,direct
+        GOSUMDB: sum.golang.org
       run: |
         "${GITHUB_WORKSPACE}/bin/bazel" build //...

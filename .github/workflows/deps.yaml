@@ -31,6 +31,9 @@ jobs:
         chmod +x "${GITHUB_WORKSPACE}/bin/bazel"
 
     - name: Update Gazelle Repos
+      env:
+        GOPROXY: https://proxy.golang.org,direct
+        GOSUMDB: sum.golang.org
       run: |
         "${GITHUB_WORKSPACE}/bin/bazel" run //:gazelle-update-repos
 
