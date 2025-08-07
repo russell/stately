@@ -1,4 +1,4 @@
-.PHONY: build test test-no-lint clean run help
+.PHONY: build test test-no-lint clean run deps help
 
 # Default target
 help:
@@ -8,6 +8,7 @@ help:
 	@echo "  test-no-lint - Run tests excluding lint checks"
 	@echo "  clean      - Clean build artifacts"
 	@echo "  run        - Build and run stately"
+	@echo "  deps       - Update dependencies (go mod tidy + gazelle)"
 	@echo "  help       - Show this help message"
 
 build:
@@ -24,6 +25,10 @@ clean:
 
 run: build
 	bazel-bin/stately
+
+deps:
+	go mod tidy
+	bazelisk run //:gazelle-update-repos
 
 # For development - watch and rebuild on changes
 dev:
