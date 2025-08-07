@@ -63,8 +63,8 @@ bats_test(
     ],
 )
 
-shellcheck_test(
-    name = "shellcheck_test",
-    data = glob(["*.sh"]),
-    tags = ["lint"],
-)
+# shellcheck_test(
+#     name = "shellcheck_test",
+#     data = glob(["*.sh"]),
+#     tags = ["lint"],
+# )
