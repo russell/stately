@@ -1,3 +1,10 @@
+## [0.10.1](https://github.com/russell/stately/compare/v0.10.0...v0.10.1) (2025-08-07)
+
+
+### Bug Fixes
+
+* update readme ([4ef99a5](https://github.com/russell/stately/commit/4ef99a54617c89b546bc2c5cf838775c29b5cae7))
+
 # [0.10.0](https://github.com/russell/stately/compare/v0.9.7...v0.10.0) (2025-08-07)
 
 
