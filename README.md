@@ -38,7 +38,7 @@ location to another.
 ``` shell
 $ stately copy ./test -o tmp/
 2021-08-16T21:34:35.216+0200	DEBUG	actions/copy.go:124	Copying: test/file2.txt -> tmp/test/file2.txt
-2021-08-16T21:34:35.217+0200	DEBUG	actions/copy.go:124	Copying: test/foo/file1.txt -> tmp/test/foo/file1.txt2
+2021-08-16T21:34:35.217+0200	DEBUG	actions/copy.go:124	Copying: test/foo/file1.txt -> tmp/test/foo/file1.txt
 ```
 
 If you use find you can see that the same files exist at the destination.
@@ -123,7 +123,7 @@ target:
 ## Prerequisites
 
 - [Bazelisk](https://github.com/bazelbuild/bazelisk) or [Bazel](https://bazel.build/)
-- Go 1.24+ (managed by Bazel)
+- Go 1.21+ (managed by Bazel)
 
 ## Contributing
 
