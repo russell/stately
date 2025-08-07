@@ -1,11 +1,15 @@
 name: Update Gazelle Repos
 
 on:
-  pull_request: {}
+  pull_request:
+    types: [opened, synchronize]
+    branches: [main]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Only run on PRs from the same repo (not forks)
+    if: github.event.pull_request.head.repo.full_name == github.repository
 
     steps:
     - uses: actions/checkout@v4
