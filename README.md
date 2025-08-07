@@ -193,11 +193,18 @@ The project includes comprehensive tests using the [Bats](https://github.com/bat
 
 ## Updating Dependencies
 
+When adding new Go dependencies or updating existing ones:
+
 ```shell
-# Update Go dependencies
-go get -u
-bazel run //:gazelle-update-repos
+# Add new dependencies
+go get github.com/some/package
+
+# Update Bazel dependencies and test
+make deps
+make test
 ```
+
+**Note**: The `gazelle-update-repos` target reads from `go.mod` and updates the `deps.bzl` file with the corresponding Bazel repository definitions. This keeps Bazel in sync with Go modules.
 
 ## State File Format
 
