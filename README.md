@@ -118,12 +118,21 @@ target:
     - Path: tmp/foo1/file3.json
 ```
 
-# Development
+# Development & Contributing
 
 ## Prerequisites
 
 - [Bazelisk](https://github.com/bazelbuild/bazelisk) or [Bazel](https://bazel.build/)
 - Go 1.22+ (managed by Bazel)
+
+## Contributing
+
+1. Fork and clone the repository
+2. Make your changes following the patterns in the codebase
+3. Run `make test` to ensure all tests pass
+4. Submit a pull request
+
+All PRs automatically run tests via GitHub Actions. Dependency updates are handled separately by maintainers.
 
 ## Quick Start
 
