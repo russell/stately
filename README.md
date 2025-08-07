@@ -118,23 +118,90 @@ target:
     - Path: tmp/foo1/file3.json
 ```
 
-# Contributing
+# Development
 
-## Updating dependencies
+## Prerequisites
 
-``` shell
+- [Bazelisk](https://github.com/bazelbuild/bazelisk) or [Bazel](https://bazel.build/)
+- Go 1.22+ (managed by Bazel)
+
+## Quick Start
+
+This project uses a Makefile for common tasks:
+
+```shell
+# Run tests
+make test
+
+# Run tests without lint checks
+make test-no-lint  
+
+# Build the binary
+make build
+
+# Build and run stately
+make run
+
+# Clean build artifacts
+make clean
+```
+
+Or use Bazel directly:
+
+```shell
+# Build the binary
+bazelisk build //:stately
+
+# Run tests
+bazelisk test //...
+
+# Run a specific test
+bazelisk test //tests:copy_test
+```
+
+## Command Line Usage
+
+```shell
+# Get help
+./bazel-bin/stately --help
+
+# Copy mode with custom options
+./bazel-bin/stately copy --help
+
+# Manifest mode with custom options  
+./bazel-bin/stately manifest --help
+```
+
+## Testing
+
+The project includes comprehensive tests using the [Bats](https://github.com/bats-core/bats-core) testing framework:
+
+- `//tests:copy_test` - Tests file copying functionality
+- `//tests:copy_filemode_test` - Tests file permission handling
+- `//tests:copy_update_test` - Tests incremental copy operations
+- `//tests:manifest_test` - Tests JSON manifest processing
+- `//tests:manifest_dhall_test` - Tests Dhall integration
+
+## Updating Dependencies
+
+```shell
+# Update Go dependencies
 go get -u
 bazel run //:gazelle-update-repos
 ```
 
-## Building
+## State File Format
 
-``` shell
-bazel build //:stately
+Stately tracks managed files using `.stately-files.yaml`:
+
+```yaml
+apiVersion: simopolis.xyz/v1alpha1
+kind: StateConfig
+target:
+  default:
+    files:
+    - Path: path/to/managed/file1.txt
+    - Path: path/to/managed/file2.txt
 ```
 
-## Tests
-
-``` shell
-bazel test ...
-```
+You can specify alternative state files with `--state-file` or manage multiple targets with `--name`.
