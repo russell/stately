@@ -1,3 +1,10 @@
+## [0.10.6](https://github.com/russell/stately/compare/v0.10.5...v0.10.6) (2025-08-08)
+
+
+### Bug Fixes
+
+* **deps:** bump github.com/go-viper/mapstructure/v2 from 2.2.1 to 2.3.0 ([33d17ae](https://github.com/russell/stately/commit/33d17aec5557fd87c9bc70a4b24e62bee25d8df2))
+
 ## [0.10.5](https://github.com/russell/stately/compare/v0.10.4...v0.10.5) (2025-08-08)
 
 
