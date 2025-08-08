@@ -33,6 +33,13 @@ jobs:
         mv bazelisk-linux-amd64 "${GITHUB_WORKSPACE}/bin/bazel"
         chmod +x "${GITHUB_WORKSPACE}/bin/bazel"
 
+    - name: Update deps
+      env:
+        GOPROXY: https://proxy.golang.org,direct
+        GOSUMDB: sum.golang.org
+      run: |
+        make deps
+
     - name: Test
       env:
         GOPROXY: https://proxy.golang.org,direct
