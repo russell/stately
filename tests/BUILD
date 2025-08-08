@@ -1,5 +1,7 @@
-load("@com_github_aignas_rules_shellcheck//:def.bzl", "shellcheck", "shellcheck_test")
 load("@bazel_bats//:rules.bzl", "bats_test")
+
+# TODO: Fix shellcheck integration with Bzlmod
+# load("@rules_shellcheck//:def.bzl", "shellcheck", "shellcheck_test")
 
 sh_library(
     name = "test_lib",
@@ -46,8 +48,8 @@ bats_test(
 bats_test(
     name = "manifest_test",
     srcs = ["manifest_test.bats"],
+    data = [":fixtures"],
     deps = [
-        "fixtures",
         ":test_lib",
         "//:stately",
     ],
@@ -56,8 +58,8 @@ bats_test(
 bats_test(
     name = "manifest_dhall_test",
     srcs = ["manifest_dhall_test.bats"],
+    data = [":fixtures"],
     deps = [
-        "fixtures",
         ":test_lib",
         "//:stately",
     ],
