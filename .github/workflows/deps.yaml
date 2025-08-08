@@ -1,4 +1,4 @@
-name: Update Gazelle Repos
+name: Update Dependencies
 
 on:
   pull_request:
@@ -30,12 +30,12 @@ jobs:
         mv bazelisk-linux-amd64 "${GITHUB_WORKSPACE}/bin/bazel"
         chmod +x "${GITHUB_WORKSPACE}/bin/bazel"
 
-    - name: Update Gazelle Repos
+    - name: Update Dependencies
       env:
         GOPROXY: https://proxy.golang.org,direct
         GOSUMDB: sum.golang.org
       run: |
-        "${GITHUB_WORKSPACE}/bin/bazel" run //:gazelle-update-repos
+        make deps
 
     - name: Push if changes
       run: |

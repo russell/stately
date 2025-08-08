@@ -1,7 +1,5 @@
 load("@bazel_bats//:rules.bzl", "bats_test")
-
-# TODO: Fix shellcheck integration with Bzlmod
-# load("@rules_shellcheck//:def.bzl", "shellcheck", "shellcheck_test")
+load("@rules_shellcheck//:def.bzl", "shellcheck_test")
 
 sh_library(
     name = "test_lib",
@@ -65,8 +63,8 @@ bats_test(
     ],
 )
 
-# shellcheck_test(
-#     name = "shellcheck_test",
-#     data = glob(["*.sh"]),
-#     tags = ["lint"],
-# )
+shellcheck_test(
+    name = "shellcheck_test",
+    data = glob(["*.sh"]),
+    tags = ["lint"],
+)
