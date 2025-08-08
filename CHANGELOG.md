@@ -1,3 +1,10 @@
+## [0.10.5](https://github.com/russell/stately/compare/v0.10.4...v0.10.5) (2025-08-08)
+
+
+### Bug Fixes
+
+* **deps:** bump github.com/spf13/cobra from 1.4.0 to 1.7.0 ([acf59c2](https://github.com/russell/stately/commit/acf59c2f4538f6cf3048689acd8319bcda32b45d))
+
 ## [0.10.4](https://github.com/russell/stately/compare/v0.10.3...v0.10.4) (2025-08-08)
 
 
