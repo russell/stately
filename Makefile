@@ -8,7 +8,7 @@ help:
 	@echo "  test-no-lint - Run tests excluding lint checks"
 	@echo "  clean      - Clean build artifacts"
 	@echo "  run        - Build and run stately"
-	@echo "  deps       - Update dependencies (go mod tidy + gazelle)"
+	@echo "  deps       - Update dependencies (go mod tidy + bzlmod lockfile)"
 	@echo "  help       - Show this help message"
 
 build:
@@ -28,7 +28,7 @@ run: build
 
 deps:
 	go mod tidy
-	bazelisk run //:gazelle-update-repos
+	bazelisk mod deps --lockfile_mode=update
 
 # For development - watch and rebuild on changes
 dev:

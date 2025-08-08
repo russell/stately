@@ -2,7 +2,7 @@
 
 set -e
 
-git add go.mod go.sum deps.bzl
+git add go.mod go.sum MODULE.bazel.lock
 
 EMAIL=$(git show -s "--format=%ae" HEAD)
 
@@ -18,7 +18,7 @@ if [ -n "$(git diff-index --cached --name-only HEAD --)" ]; then
     if [ "$DEPENDABOT" = true ]; then
         git commit --amend --no-edit
     else
-        git commit -m "chore: update go.mod bazel deps"
+        git commit -m "chore: update go.mod bzlmod deps"
     fi
 
     echo "Pushing changes"
