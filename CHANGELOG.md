@@ -1,3 +1,10 @@
+## [0.10.3](https://github.com/russell/stately/compare/v0.10.2...v0.10.3) (2025-08-08)
+
+
+### Bug Fixes
+
+* **deps:** bump go.uber.org/zap from 1.21.0 to 1.24.0 ([230d45f](https://github.com/russell/stately/commit/230d45f1bde2bbdf74f162d71a30618493f7d22d))
+
 ## [0.10.2](https://github.com/russell/stately/compare/v0.10.1...v0.10.2) (2025-08-08)
 
 
