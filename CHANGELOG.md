@@ -1,3 +1,11 @@
+## [0.10.2](https://github.com/russell/stately/compare/v0.10.1...v0.10.2) (2025-08-08)
+
+
+### Bug Fixes
+
+* update other dependencie bumpers and enable shellcheck ([6342f55](https://github.com/russell/stately/commit/6342f55d5eb92498c10be1ea02547748914aabb0))
+* upgrade to bzlmod in preparation for bazel 9 ([dc3f46a](https://github.com/russell/stately/commit/dc3f46a0f62714e8a33c0dfb36f38198fffed667))
+
 ## [0.10.1](https://github.com/russell/stately/compare/v0.10.0...v0.10.1) (2025-08-07)
 
 
