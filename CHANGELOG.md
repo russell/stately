@@ -1,3 +1,10 @@
+## [0.10.4](https://github.com/russell/stately/compare/v0.10.3...v0.10.4) (2025-08-08)
+
+
+### Bug Fixes
+
+* **deps:** bump github.com/spf13/viper from 1.11.0 to 1.15.0 ([d1a6be6](https://github.com/russell/stately/commit/d1a6be636b57b0770f5a8392758c98a58c811563))
+
 ## [0.10.3](https://github.com/russell/stately/compare/v0.10.2...v0.10.3) (2025-08-08)
 
 
