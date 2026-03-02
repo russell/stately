@@ -1,4 +1,5 @@
 load("@bazel_bats//:rules.bzl", "bats_test")
+load("@rules_shell//shell:sh_library.bzl", "sh_library")
 load("@rules_shellcheck//:def.bzl", "shellcheck_test")
 
 sh_library(
