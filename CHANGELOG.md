@@ -1,3 +1,10 @@
+## [0.10.7](https://github.com/russell/stately/compare/v0.10.6...v0.10.7) (2026-03-02)
+
+
+### Bug Fixes
+
+* **deps:** bump bazel deps for bazel 9 compatibility ([6e1f8bf](https://github.com/russell/stately/commit/6e1f8bfbbf06946b15f9b4929eb37b08159ab425))
+
 ## [0.10.6](https://github.com/russell/stately/compare/v0.10.5...v0.10.6) (2025-08-08)
 
 
