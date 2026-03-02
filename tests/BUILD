@@ -13,6 +13,7 @@ filegroup(
     name = "fixtures",
     srcs = [
         "dhall-render-test.json",
+        "merge-section-test.json",
         "test.json",
     ],
 )
@@ -57,6 +58,16 @@ bats_test(
 bats_test(
     name = "manifest_dhall_test",
     srcs = ["manifest_dhall_test.bats"],
+    data = [":fixtures"],
+    deps = [
+        ":test_lib",
+        "//:stately",
+    ],
+)
+
+bats_test(
+    name = "manifest_merge_section_test",
+    srcs = ["manifest_merge_section_test.bats"],
     data = [":fixtures"],
     deps = [
         ":test_lib",

@@ -1,4 +1,4 @@
-load("@rules_go//go:def.bzl", "go_library")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "models",
@@ -13,4 +13,10 @@ go_library(
         "@in_gopkg_yaml_v2//:yaml_v2",
         "@org_uber_go_zap//:zap",
     ],
+)
+
+go_test(
+    name = "models_test",
+    srcs = ["manifest_file_test.go"],
+    embed = [":models"],
 )
