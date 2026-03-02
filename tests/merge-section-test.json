@@ -1,0 +1,14 @@
+{
+  "files": {
+    "managed-file": {
+      "executable": false,
+      "contents": "managed-line-1\nmanaged-line-2\n",
+      "format": "Raw",
+      "headerFormat": false,
+      "headerLines": [],
+      "install": "MergeSection",
+      "sectionStart": "# BEGIN MANAGED",
+      "sectionEnd": "# END MANAGED"
+    }
+  }
+}

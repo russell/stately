@@ -171,6 +171,16 @@ func (m *ManifestContainer) AddFile(path string, file map[string]interface{}) er
 		mFile.HeaderFormat = mHeader
 	}
 
+	switch sectionStart := file["sectionStart"].(type) {
+	case string:
+		mFile.SectionStart = sectionStart
+	}
+
+	switch sectionEnd := file["sectionEnd"].(type) {
+	case string:
+		mFile.SectionEnd = sectionEnd
+	}
+
 	m.Files = append(m.Files, mFile)
 	return nil
 }
