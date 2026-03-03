@@ -1,3 +1,10 @@
+# [0.11.0](https://github.com/russell/stately/compare/v0.10.7...v0.11.0) (2026-03-03)
+
+
+### Features
+
+* add MergeSection install type for composable managed file sections ([1b75fcf](https://github.com/russell/stately/commit/1b75fcf6d13417c503c9a5c4fc9db06e99c364e9))
+
 ## [0.10.7](https://github.com/russell/stately/compare/v0.10.6...v0.10.7) (2026-03-02)
 
 
