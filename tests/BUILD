@@ -13,6 +13,7 @@ filegroup(
     name = "fixtures",
     srcs = [
         "dhall-render-test.json",
+        "merge-section-empty-test.json",
         "merge-section-test.json",
         "test.json",
     ],

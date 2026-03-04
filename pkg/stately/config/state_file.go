@@ -6,13 +6,16 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 
 	"github.com/ghodss/yaml"
 	"go.uber.org/zap"
 )
 
 type StateFile struct {
-	Path string `json: path`
+	Path         string `json: path`
+	SectionStart string `json:"sectionStart,omitempty"`
+	SectionEnd   string `json:"sectionEnd,omitempty"`
 }
 
 type StateTarget struct {
@@ -113,15 +116,23 @@ func (c StateConfig) Validate() error {
 }
 
 func Cleanup(stateFilePath string, targetName string, previousState StateConfig, newState StateConfig, logger *zap.SugaredLogger) error {
-	// Calculate what should be deleted
-	toDelete := make(map[string]bool)
+	// Build a map of previous files with their metadata.
+	type fileInfo struct {
+		SectionStart string
+		SectionEnd   string
+	}
+	previousFiles := make(map[string]fileInfo)
 	for _, s := range previousState.Targets[targetName].Files {
-		toDelete[s.Path] = true
+		previousFiles[s.Path] = fileInfo{
+			SectionStart: s.SectionStart,
+			SectionEnd:   s.SectionEnd,
+		}
 	}
 
-	// Make everything in the new state as to be kept
+	// Mark files in the new state as kept.
+	newFilePaths := make(map[string]bool)
 	for _, s := range newState.Targets[targetName].Files {
-		toDelete[s.Path] = false
+		newFilePaths[s.Path] = true
 	}
 
 	cwd, err := os.Getwd()
@@ -129,16 +140,68 @@ func Cleanup(stateFilePath string, targetName string, previousState StateConfig,
 		logger.Errorf("Current working directory has vanished: %s", cwd)
 	}
 	os.Chdir(filepath.Dir(stateFilePath))
-	for file, delete := range toDelete {
-		if delete == false {
+	for file, info := range previousFiles {
+		if newFilePaths[file] {
 			continue
 		}
-		logger.Debugf("Deleting: %s", file)
-		if err := os.Remove(file); err != nil {
-			logger.Infof("Couldn't delete: %s", file)
-			// TODO should delete empty directories
+
+		if info.SectionStart != "" && info.SectionEnd != "" {
+			logger.Debugf("Removing managed section from: %s", file)
+			if err := removeManagedSection(file, info.SectionStart, info.SectionEnd); err != nil {
+				logger.Infof("Couldn't remove managed section from %s: %s", file, err)
+			}
+		} else {
+			logger.Debugf("Deleting: %s", file)
+			if err := os.Remove(file); err != nil {
+				logger.Infof("Couldn't delete: %s", file)
+				// TODO should delete empty directories
+			}
 		}
 	}
 	os.Chdir(cwd)
 	return nil
+}
+
+// removeManagedSection removes the managed section (including markers) from a file.
+// If the file contains only the managed section (and whitespace), the file is deleted.
+func removeManagedSection(path string, sectionStart string, sectionEnd string) error {
+	content, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+
+	lines := strings.Split(string(content), "\n")
+	startMarker := strings.TrimSpace(sectionStart)
+	endMarker := strings.TrimSpace(sectionEnd)
+
+	startIdx := -1
+	endIdx := -1
+	for i, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if startIdx == -1 && trimmed == startMarker {
+			startIdx = i
+			continue
+		}
+		if startIdx != -1 && trimmed == endMarker {
+			endIdx = i
+			break
+		}
+	}
+
+	if startIdx == -1 || endIdx == -1 {
+		// No managed section found, nothing to remove.
+		return nil
+	}
+
+	// Remove the managed section lines (inclusive of markers).
+	remaining := append(lines[:startIdx], lines[endIdx+1:]...)
+	result := strings.Join(remaining, "\n")
+
+	// Check if the file is effectively empty after removal.
+	if strings.TrimSpace(result) == "" {
+		return os.Remove(path)
+	}
+
+	// Write back the content with user content preserved exactly.
+	return os.WriteFile(path, []byte(result), 0644)
 }

@@ -80,7 +80,12 @@ func Manifest(o *ManifestOptions) error {
 		o.Logger.Debugf("Manifesting file: %s", dest)
 		dest, _ = filepath.Abs(dest)
 		rel, _ := filepath.Rel(stateFileDir, dest)
-		newFiles = append(newFiles, config.StateFile{Path: rel})
+		stateEntry := config.StateFile{Path: rel}
+		if file.Install == models.MergeSection {
+			stateEntry.SectionStart = file.SectionStart
+			stateEntry.SectionEnd = file.SectionEnd
+		}
+		newFiles = append(newFiles, stateEntry)
 	}
 
 	if o.TargetName == "default" && manifests.Options.Destination != "" {

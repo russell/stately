@@ -55,3 +55,46 @@ user-after" ]
 
     rm -rf "$OUTPUT_DIR"
 }
+
+@test "MergeSection cleanup removes only managed section, preserves user content" {
+    export OUTPUT_DIR=$(mktemp -d)
+
+    # First run: create the managed file
+    stately manifest -s "$OUTPUT_DIR/.manifest.yml" -o "$OUTPUT_DIR" -i - < "tests/merge-section-test.json"
+
+    # Add user content around the managed section
+    cat > "$OUTPUT_DIR/managed-file" << 'EOF'
+user-before
+# BEGIN MANAGED
+managed-line-1
+managed-line-2
+# END MANAGED
+user-after
+EOF
+
+    # Second run: empty manifest triggers cleanup of the managed file
+    stately manifest -s "$OUTPUT_DIR/.manifest.yml" -o "$OUTPUT_DIR" -i - < "tests/merge-section-empty-test.json"
+
+    # File should still exist with only user content
+    test -f "$OUTPUT_DIR/managed-file"
+    run file_contents managed-file
+    [ "$output" = "user-before
+user-after" ]
+
+    rm -rf "$OUTPUT_DIR"
+}
+
+@test "MergeSection cleanup deletes file if it contains only managed content" {
+    export OUTPUT_DIR=$(mktemp -d)
+
+    # First run: create the managed file
+    stately manifest -s "$OUTPUT_DIR/.manifest.yml" -o "$OUTPUT_DIR" -i - < "tests/merge-section-test.json"
+
+    # Second run: empty manifest triggers cleanup
+    stately manifest -s "$OUTPUT_DIR/.manifest.yml" -o "$OUTPUT_DIR" -i - < "tests/merge-section-empty-test.json"
+
+    # File should be deleted since it only had managed content
+    test ! -f "$OUTPUT_DIR/managed-file"
+
+    rm -rf "$OUTPUT_DIR"
+}
