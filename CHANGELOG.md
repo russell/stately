@@ -1,3 +1,10 @@
+## [0.11.1](https://github.com/russell/stately/compare/v0.11.0...v0.11.1) (2026-03-05)
+
+
+### Bug Fixes
+
+* merge-section cleanup removes only managed section, not entire file ([6e096c9](https://github.com/russell/stately/commit/6e096c97f5617b78353e7256b2db76c843805c38))
+
 # [0.11.0](https://github.com/russell/stately/compare/v0.10.7...v0.11.0) (2026-03-03)
 
 
