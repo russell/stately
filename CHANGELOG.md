@@ -1,3 +1,10 @@
+## [0.11.2](https://github.com/russell/stately/compare/v0.11.1...v0.11.2) (2026-03-09)
+
+
+### Bug Fixes
+
+* **deps:** bump github.com/jinzhu/copier from 0.3.5 to 0.4.0 ([b02eae4](https://github.com/russell/stately/commit/b02eae4a0cc58e58e8e9f3249e2974476fe6e691))
+
 ## [0.11.1](https://github.com/russell/stately/compare/v0.11.0...v0.11.1) (2026-03-05)
 
 
